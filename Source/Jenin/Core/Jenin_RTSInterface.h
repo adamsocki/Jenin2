@@ -47,4 +47,8 @@ public:
 	void ClearSelectedUnits();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void SelectSingleUnit(AActor* Unit);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void HighlightUnit();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void UnhighlightUnit();
 };

@@ -26,6 +26,9 @@ public:
 	virtual void SelectUnit_Implementation() override;
 	virtual void DeselectUnit_Implementation() override;
 	virtual void UnitMoveCommand_Implementation(FVector Location) override;
+	virtual void HighlightUnit_Implementation() override;
+	virtual void UnhighlightUnit_Implementation() override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,4 +45,11 @@ public:
 	
 	UPROPERTY()
 	UJenin_SelectedUnitWidget *MyUnitWidget;
+
+private:
+	UPROPERTY()
+	UMaterialInterface* SelectionDecalMaterial;
+	UPROPERTY()
+	UMaterialInterface* HighlightedDecalMaterial;
+	
 };
