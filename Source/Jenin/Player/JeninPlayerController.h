@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystemInterface.h"
+#include "Jenin/Building/JeninBuilding.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
 #include "Jenin/UI/JeninSelectedUnitArea.h"
 
@@ -21,7 +22,6 @@ class JENIN_API AJeninPlayerController : public APlayerController, public IJenin
 	AJeninPlayerController();
 
 public:
-	// UEnhancedInputComponent* EnhancedInputComponent; 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -35,6 +35,7 @@ public:
 	bool IsLeftMouseButtonPressed;
 	 
 	virtual void SetupInputComponent() override;
+	virtual void ClearSelectedBuilding_Implementation() override;
 
 
 	UFUNCTION()
@@ -48,18 +49,12 @@ public:
 
 	FVector ClickedLocation;
 
-
-	
-	
+	UPROPERTY()
+	AJeninBuilding *SelectedBuilding;
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	// virtual void SetupPlayerInputComponent5(UInputComponent* PlayerInputComponent) override;			
+	// virtual void SetupPlayerInputComponent5(UInputComponent* PlayerInputComponent) override;
 	
-	
-
-
-
-
 };

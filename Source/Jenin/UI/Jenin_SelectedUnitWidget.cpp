@@ -35,7 +35,6 @@ void UJenin_SelectedUnitWidget::NativeOnMouseEnter(const FGeometry& InGeometry, 
 		FSlateColor Yellow = FSlateColor(FLinearColor(1.0f, 1.0f, 0.0f));
 		UnitImage->SetBrushTintColor(Yellow);
 	}
-		
 }
 
 void UJenin_SelectedUnitWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)

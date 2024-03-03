@@ -34,9 +34,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void MarqueeReleased();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
-	void SelectUnit();
+	void SelectThis();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
-	void DeselectUnit();
+	void DeselectThis();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void UnitMoveCommand(FVector Location);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
@@ -51,4 +51,7 @@ public:
 	void HighlightUnit();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void UnhighlightUnit();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void ClearSelectedBuilding();
 };

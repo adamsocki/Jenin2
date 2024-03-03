@@ -40,9 +40,9 @@ AJeninUnit::AJeninUnit()
 	
 }
 
-void AJeninUnit::SelectUnit_Implementation()
+void AJeninUnit::SelectThis_Implementation()
 {
-	IJenin_RTSInterface::SelectUnit_Implementation();
+	IJenin_RTSInterface::SelectThis_Implementation();
 	SelectionDecal->SetVisibility(true);
 	AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	if (MarqueeHUD && MyUnitWidget)
@@ -52,9 +52,9 @@ void AJeninUnit::SelectUnit_Implementation()
 }
 
 
-void AJeninUnit::DeselectUnit_Implementation()
+void AJeninUnit::DeselectThis_Implementation()
 {
-	IJenin_RTSInterface::DeselectUnit_Implementation();
+	IJenin_RTSInterface::DeselectThis_Implementation();
 	SelectionDecal->SetVisibility(false);
 	if (MyUnitWidget)
 	{

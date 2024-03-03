@@ -5,6 +5,7 @@
 
 #include "JeninSelectedUnitArea.h"
 #include "Components/HorizontalBox.h"
+#include "Jenin/Player/JeninPlayerController.h"
 
 AJeninMarqueeHUD::AJeninMarqueeHUD()
 {
@@ -52,7 +53,6 @@ void AJeninMarqueeHUD::MarqueeReleased_Implementation()
 {
 	IJenin_RTSInterface::MarqueeReleased_Implementation();
 	IsDrawing = false;
-
 }
 
 TArray<AJeninUnit*> AJeninMarqueeHUD::GrabSelectedUnits_Implementation()
@@ -75,7 +75,7 @@ void AJeninMarqueeHUD::ClearSelectedUnits_Implementation()
 	IJenin_RTSInterface::ClearSelectedUnits_Implementation();
 	for (int i = 0; i < UnitsSelected.Num(); i++)
 	{
-		UnitsSelected[i]->DeselectUnit_Implementation();
+		UnitsSelected[i]->DeselectThis_Implementation();
 	}
 	UnitsSelected.Empty();
 }
@@ -84,11 +84,12 @@ void AJeninMarqueeHUD::SelectSingleUnit_Implementation(AActor* Unit)
 {
 	if (AJeninUnit* JeninUnit = Cast<AJeninUnit>(Unit))
 	{
-		JeninUnit->SelectUnit_Implementation();
+		JeninUnit->SelectThis_Implementation();
 		UnitsSelected.AddUnique(JeninUnit);
 	}
 	IJenin_RTSInterface::SelectSingleUnit_Implementation(Unit);
 }
+
 
 
 void AJeninMarqueeHUD::DrawHUD()
@@ -105,13 +106,16 @@ void AJeninMarqueeHUD::DrawHUD()
 		TArray<AJeninUnit*> UnitsUnderRectangle;
 		GetActorsInSelectionRectangle(StartingMousePosition, CurrentMousePosition, UnitsUnderRectangle, false, false);
 		//UE_LOG(LogTemp, Warning, TEXT("The under rect value is: %d"), UnitsUnderRectangle.Num());
-	
 		for (int i = 0; i < UnitsUnderRectangle.Num(); i++)
 		{
 			if (IJenin_RTSInterface *SelectionInterfaceUnit = Cast<IJenin_RTSInterface>(UnitsUnderRectangle[i]))
 			{
-				SelectionInterfaceUnit->SelectUnit_Implementation();
+				SelectionInterfaceUnit->SelectThis_Implementation();
 				UnitsSelected.AddUnique(UnitsUnderRectangle[i]);
+				if (AJeninPlayerController *PlayerController = Cast<AJeninPlayerController>(GetOwningPlayerController()))
+				{
+					PlayerController->ClearSelectedBuilding_Implementation();
+				}
 			}
 		}
 		UE_LOG(LogTemp, Warning, TEXT("The Selected value is: %d"), UnitsSelected.Num());
@@ -122,7 +126,7 @@ void AJeninMarqueeHUD::DrawHUD()
 			{
 				if (IJenin_RTSInterface *SelectionInterfaceUnit = Cast<IJenin_RTSInterface>(UnitsSelected[i]))
 				{
-					UnitsSelected[i]->DeselectUnit_Implementation();
+					UnitsSelected[i]->DeselectThis_Implementation();
 					UnitsSelected.RemoveAt(i);
 				}
 			}

@@ -20,11 +20,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	UDecalComponent* SelectionDecal;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTexture2D> UnitImage;
 
-	virtual void SelectUnit_Implementation() override;
-	virtual void DeselectUnit_Implementation() override;
+	virtual void SelectThis_Implementation() override;
+	virtual void DeselectThis_Implementation() override;
 	virtual void UnitMoveCommand_Implementation(FVector Location) override;
 	virtual void HighlightUnit_Implementation() override;
 	virtual void UnhighlightUnit_Implementation() override;
@@ -40,16 +40,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UJenin_SelectedUnitWidget> UnitWidget;
 	
 	UPROPERTY()
 	UJenin_SelectedUnitWidget *MyUnitWidget;
 
-private:
 	UPROPERTY()
 	UMaterialInterface* SelectionDecalMaterial;
 	UPROPERTY()
 	UMaterialInterface* HighlightedDecalMaterial;
+
+	
 	
 };

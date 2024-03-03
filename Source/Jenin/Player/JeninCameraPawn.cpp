@@ -1,8 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "JeninCameraPawn.h"
-
 
 // Sets default values
 AJeninCameraPawn::AJeninCameraPawn()
@@ -21,23 +19,18 @@ AJeninCameraPawn::AJeninCameraPawn()
 	
 	FRotator NewRotation = FRotator(70.0f, 0.0f, 0.0f); // Construct rotator with desired values
 	Camera->SetRelativeRotation(NewRotation);
-
-	
 }
 
 // Called when the game starts or when spawned
 void AJeninCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	
 }
 
 // Called every frame
 void AJeninCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 	// CAMERA MOVEMENT AT EDGE OF VIEWPORT
 	if(APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
