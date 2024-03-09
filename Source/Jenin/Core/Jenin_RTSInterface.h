@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 //#include "Jenin/Unit/JeninUnit.h"
+#include "Jenin/Player/JeninPlayerStart.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
 #include "UObject/Interface.h"
 #include "Jenin_RTSInterface.generated.h"
@@ -54,4 +55,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void ClearSelectedBuilding();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "PlayerStart")
+	void SetupPlayerStart(AJeninPlayerStart* PlayerStart, int32 TeamNumber, FLinearColor TeamColor);
 };

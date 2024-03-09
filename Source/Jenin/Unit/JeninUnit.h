@@ -28,6 +28,9 @@ public:
 	virtual void UnitMoveCommand_Implementation(FVector Location) override;
 	virtual void HighlightUnit_Implementation() override;
 	virtual void UnhighlightUnit_Implementation() override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerMoveToLocationStarted(FVector Location);
 	
 protected:
 	// Called when the game starts or when spawned

@@ -24,6 +24,10 @@ public:
 	AJeninCameraPawn();
 
 	float ScrollSpeed = 700.0f;
+	bool MoveW;
+	bool MoveA;
+	bool MoveS;
+	bool MoveD;
 
 protected:
 	// Called when the game starts or when spawned

@@ -37,7 +37,9 @@ AJeninUnit::AJeninUnit()
 	{
 		HighlightedDecalMaterial = HighlightedSelectedMaterialAsset.Object;
 	}
-	
+
+	this->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	bReplicates = true;
 }
 
 void AJeninUnit::SelectThis_Implementation()
@@ -70,9 +72,21 @@ void AJeninUnit::UnitMoveCommand_Implementation(FVector Location)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UnitMov AIController Unit."));
 		//UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand_Implementation called. Location: %s"), *Location.ToString());
-
+		if (HasAuthority()) // or Role == ROLE_Authority
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on SERVER for %s"), *GetName());
+		}
+		else 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on CLIENT for %s"), *GetName());
+		}
 		UnitAIController->StopMovement();
 		UnitAIController->MoveToLocation(Location);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No AI CONTROLLER FOR UNIT."));
+
 	}
 }
 
@@ -87,6 +101,43 @@ void AJeninUnit::UnhighlightUnit_Implementation()
 	IJenin_RTSInterface::UnhighlightUnit_Implementation();
 	SelectionDecal->SetDecalMaterial(SelectionDecalMaterial);
 
+}
+
+void AJeninUnit::ServerMoveToLocationStarted_Implementation(FVector Location)
+{
+	if (HasAuthority()) // or Role == ROLE_Authority
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on SERVER for %s"), *GetName());
+		AAIController *UnitAIController = GetController<AAIController>();
+		if (UnitAIController)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UnitMov AIController Unit."));
+			UnitAIController->StopMovement();
+			UnitAIController->MoveToLocation(Location);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No AI CONTROLLER FOR UNIT."));
+		}
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on CLIENT for %s"), *GetName());
+	}
+	if (AAIController *UnitAIController = GetController<AAIController>())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UnitMov AIController Unit."));
+		//UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand_Implementation called. Location: %s"), *Location.ToString());
+		
+		UnitAIController->StopMovement();
+		UnitAIController->MoveToLocation(Location);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No AI CONTROLLER FOR UNIT."));
+
+	}
+	UE_LOG(LogTemp, Warning, TEXT("ServerUpdate for move."));
 }
 
 // Called when the game starts or when spawned

@@ -1,6 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "JeninPlayerController.h"
+
+#include "AIController.h"
+#include "DetourCrowdAIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/HorizontalBox.h"
@@ -12,6 +15,18 @@ AJeninPlayerController::AJeninPlayerController()
 {
 	ClickedLocation = {};
 	IsLeftMouseButtonPressed = {};
+
+	static ConstructorHelpers::FClassFinder<AActor> BPFinderBuilding(TEXT("Blueprint'/Game/App/Buildings/BP_JeninBuilding_Type001.BP_JeninBuilding_Type001_C'"));
+	if (BPFinderBuilding.Class != nullptr)
+	{
+		BuildingBPClass = BPFinderBuilding.Class; 
+	}
+
+	static ConstructorHelpers::FClassFinder<AActor> BPFinderUnit(TEXT("Blueprint'/Game/App/Units/BP_JeninUnit_001.BP_JeninUnit_001_C'"));
+	if (BPFinderUnit.Class != nullptr)
+	{
+		UnitBPClass = BPFinderUnit.Class; 
+	}
 }
 
 void AJeninPlayerController::SetupInputComponent()
@@ -35,19 +50,83 @@ void AJeninPlayerController::ClearSelectedBuilding_Implementation()
 	}
 }
 
+void AJeninPlayerController::ServerMoveToLocationStarted_Implementation(AJeninUnit* Unit, FVector Location)
+{
+	
+	//Unit->UnitMoveCommand_Implementation(Location);
+
+	if (AAIController *UnitAIController = Unit->GetController<AAIController>())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UnitMov AIController Unit."));
+		//UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand_Implementation called. Location: %s"), *Location.ToString());
+		if (HasAuthority()) // or Role == ROLE_Authority
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on SERVER for %s"), *GetName());
+		}
+		else 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on CLIENT for %s"), *GetName());
+		}
+		UnitAIController->StopMovement();
+		UnitAIController->MoveToLocation(Location);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No AI CONTROLLER FOR UNIT."));
+
+	}
+	UE_LOG(LogTemp, Warning, TEXT("ServerUpdate for move."));
+}
+
+
+void AJeninPlayerController::SetupPlayerStart_Implementation(AJeninPlayerStart* PlayerStart, int32 teamNumber, FLinearColor teamColor)
+{
+	IJenin_RTSInterface::SetupPlayerStart_Implementation(PlayerStart, teamNumber, teamColor);
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ControllerSetupSPAWN"));
+
+		FActorSpawnParameters SpawnBuildingParameters;
+		//SpawnBuildingParameters.Owner = this;
+		FRotator SpawnRotation = {};
+		AJeninBuilding* SpawnedBuilding = GetWorld()->SpawnActor<AJeninBuilding>(BuildingBPClass, PlayerStart->BuildingLocation->GetComponentLocation(), SpawnRotation);
+		//SpawnedBuilding->SetOwner(this);
+	
+		FActorSpawnParameters SpawnUnit001Parameters;
+		SpawnUnit001Parameters.Owner = this;
+		AJeninUnit* SpawnedUnit001 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_001->GetComponentLocation(), SpawnRotation);
+		//SpawnedUnit001->SetOwner(this);
+	
+		FActorSpawnParameters SpawnUnit002Parameters;
+		//SpawnUnit002Parameters.Owner = this;
+		AJeninUnit* SpawnedUnit002 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_002->GetComponentLocation(), SpawnRotation);
+		//SpawnedUnit002->SetOwner(this);
+	
+		FActorSpawnParameters SpawnUnit003Parameters;
+		//SpawnUnit003Parameters.Owner = this;
+		AJeninUnit* SpawnedUnit003 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_003->GetComponentLocation(), SpawnRotation);
+		//SpawnedUnit003->SetOwner(this);
+	
+	}
+	
+}
+
 void AJeninPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	this->bShowMouseCursor = true;
-	this->bEnableClickEvents = true;
-	this->bEnableMouseOverEvents = true;
-	FInputModeGameAndUI InputMode;
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetHideCursorDuringCapture(false);
-	this->SetInputMode(InputMode);
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	if (IsLocalController())
 	{
-		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		this->bShowMouseCursor = true;
+		this->bEnableClickEvents = true;
+		this->bEnableMouseOverEvents = true;
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		this->SetInputMode(InputMode);
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
 	}
 }
 
@@ -131,10 +210,13 @@ void AJeninPlayerController::OnMoveToLocationStarted(const FInputActionValue& Va
 					UE_LOG(LogTemp, Display, TEXT("Move command initiated for %d selected units. Target Location: %s"), units.Num(), *Hit.Location.ToString());
 					for (int i = 0 ; i < units.Num(); i++)
 					{
-						units[i]->UnitMoveCommand_Implementation(Hit.Location);
+						ServerMoveToLocationStarted(units[i],Hit.Location);
+						//units[i]->ServerMoveToLocationStarted(Hit.Location);
+
 					}
 				}
 			}
 		}
 	}
 }
+

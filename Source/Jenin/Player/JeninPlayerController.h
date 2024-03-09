@@ -32,6 +32,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveToLocationAction = nullptr;
 
+	UPROPERTY()
+	TSubclassOf<AActor> BuildingBPClass;
+
+	UPROPERTY()
+	TSubclassOf<AActor> UnitBPClass;
+	
+
 	bool IsLeftMouseButtonPressed;
 	 
 	virtual void SetupInputComponent() override;
@@ -47,10 +54,15 @@ public:
 	UFUNCTION()
 	void OnMoveToLocationStarted(const FInputActionValue& Value);
 
+	UFUNCTION(Server, Reliable)
+	void ServerMoveToLocationStarted(AJeninUnit* Unit, FVector Location);
+
 	FVector ClickedLocation;
 
 	UPROPERTY()
 	AJeninBuilding *SelectedBuilding;
+
+	virtual void SetupPlayerStart_Implementation(AJeninPlayerStart* PlayerStart, int32 TeamNumber, FLinearColor TeamColor) override;
 	
 protected:
 	virtual void BeginPlay() override;

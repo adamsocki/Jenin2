@@ -2,6 +2,8 @@
 
 #include "JeninCameraPawn.h"
 
+#include "EnhancedInputSubsystems.h"
+
 // Sets default values
 AJeninCameraPawn::AJeninCameraPawn()
 {
@@ -25,6 +27,8 @@ AJeninCameraPawn::AJeninCameraPawn()
 void AJeninCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 }
 
 // Called every frame
@@ -40,7 +44,7 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 		PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
 		PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
 
-		if (MousePosition.X / ViewportSizeX > 0.98f)
+		/*if (MousePosition.X / ViewportSizeX > 0.98f)
 		{
 			FVector DeltaLocation = {};
 			DeltaLocation.Y = ScrollSpeed * GetWorld()->GetDeltaSeconds();
@@ -64,7 +68,7 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 			FVector DeltaLocation = {};
 			DeltaLocation.X = ScrollSpeed * GetWorld()->GetDeltaSeconds();
 			AddActorWorldOffset(DeltaLocation);
-		}
+		}*/
 	}
 }
 
@@ -72,5 +76,8 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 void AJeninCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+
+	
 }
 
