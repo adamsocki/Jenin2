@@ -3,6 +3,7 @@
 #include "JeninPlayerController.h"
 
 #include "AIController.h"
+#include "Net/UnrealNetwork.h"
 #include "DetourCrowdAIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -27,6 +28,13 @@ AJeninPlayerController::AJeninPlayerController()
 	{
 		UnitBPClass = BPFinderUnit.Class; 
 	}
+}
+void AJeninPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AJeninPlayerController, TeamNumber);
+	DOREPLIFETIME(AJeninPlayerController, TeamColor);
 }
 
 void AJeninPlayerController::SetupInputComponent()
@@ -84,29 +92,49 @@ void AJeninPlayerController::SetupPlayerStart_Implementation(AJeninPlayerStart* 
 	IJenin_RTSInterface::SetupPlayerStart_Implementation(PlayerStart, teamNumber, teamColor);
 	if (HasAuthority())
 	{
+		TeamNumber = teamNumber;
+		TeamColor = teamColor;
 		UE_LOG(LogTemp, Warning, TEXT("ControllerSetupSPAWN"));
 
 		FActorSpawnParameters SpawnBuildingParameters;
 		//SpawnBuildingParameters.Owner = this;
 		FRotator SpawnRotation = {};
 		AJeninBuilding* SpawnedBuilding = GetWorld()->SpawnActor<AJeninBuilding>(BuildingBPClass, PlayerStart->BuildingLocation->GetComponentLocation(), SpawnRotation);
-		//SpawnedBuilding->SetOwner(this);
-	
+		SpawnedBuilding->TeamNumber = TeamNumber;
+		SpawnedBuilding->TeamColor = TeamColor;
+		
 		FActorSpawnParameters SpawnUnit001Parameters;
 		SpawnUnit001Parameters.Owner = this;
 		AJeninUnit* SpawnedUnit001 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_001->GetComponentLocation(), SpawnRotation);
-		//SpawnedUnit001->SetOwner(this);
+		SpawnedUnit001->TeamNumber = TeamNumber;
+		SpawnedUnit001->TeamColor = TeamColor;
 	
 		FActorSpawnParameters SpawnUnit002Parameters;
 		//SpawnUnit002Parameters.Owner = this;
 		AJeninUnit* SpawnedUnit002 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_002->GetComponentLocation(), SpawnRotation);
-		//SpawnedUnit002->SetOwner(this);
+		SpawnedUnit002->TeamNumber = TeamNumber;
+		SpawnedUnit002->TeamColor = TeamColor;
 	
 		FActorSpawnParameters SpawnUnit003Parameters;
 		//SpawnUnit003Parameters.Owner = this;
 		AJeninUnit* SpawnedUnit003 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_003->GetComponentLocation(), SpawnRotation);
-		//SpawnedUnit003->SetOwner(this);
+		SpawnedUnit003->TeamNumber = TeamNumber;
+		SpawnedUnit003->TeamColor = TeamColor;
 	
+	}
+	
+}
+
+bool AJeninPlayerController::IsOnMyTeam_Implementation(int32 teamNumber)
+{
+	
+	if (TeamNumber == teamNumber)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 	
 }
@@ -145,9 +173,19 @@ void AJeninPlayerController::Tick(float DeltaSeconds)
 			{
 				if (HitResult.GetActor()->IsA(AJeninBuilding::StaticClass()))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Hello"));
+					UE_LOG(LogTemp, Warning, TEXT("HitBuilding"));
 					SelectedBuilding = Cast<AJeninBuilding>(HitResult.GetActor());
-					SelectedBuilding->SelectThis_Implementation();
+					
+
+					int32 BuildingTeam = SelectedBuilding->GetTeam_Implementation();
+					if (this->IsOnMyTeam_Implementation(BuildingTeam))
+					{
+						SelectedBuilding->SelectThis_Implementation();
+						UE_LOG(LogTemp, Warning, TEXT("SelectThisSholundwixk"));
+
+					}
+					
+					
 				}
 			}
 			AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());

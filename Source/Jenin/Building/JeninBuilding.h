@@ -34,4 +34,11 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(Replicated)
+	int32 TeamNumber;
+	UPROPERTY(Replicated)
+	FLinearColor TeamColor;
+
+	virtual int32 GetTeam_Implementation() override;
 };

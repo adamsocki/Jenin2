@@ -108,15 +108,28 @@ void AJeninMarqueeHUD::DrawHUD()
 		//UE_LOG(LogTemp, Warning, TEXT("The under rect value is: %d"), UnitsUnderRectangle.Num());
 		for (int i = 0; i < UnitsUnderRectangle.Num(); i++)
 		{
-			if (IJenin_RTSInterface *SelectionInterfaceUnit = Cast<IJenin_RTSInterface>(UnitsUnderRectangle[i]))
+
+			int32 UnitTeam = UnitsUnderRectangle[i]->GetTeam_Implementation();
+			UE_LOG(LogTemp, Warning, TEXT("The integer value is: %d"), UnitTeam);
+			if (AJeninPlayerController *PlayerController = Cast<AJeninPlayerController>(GetOwningPlayerController()))
 			{
-				SelectionInterfaceUnit->SelectThis_Implementation();
-				UnitsSelected.AddUnique(UnitsUnderRectangle[i]);
-				if (AJeninPlayerController *PlayerController = Cast<AJeninPlayerController>(GetOwningPlayerController()))
+				if (PlayerController->IsOnMyTeam_Implementation(UnitTeam))
 				{
-					PlayerController->ClearSelectedBuilding_Implementation();
+					if (IJenin_RTSInterface *SelectionInterfaceUnit = Cast<IJenin_RTSInterface>(UnitsUnderRectangle[i]))
+					{
+						SelectionInterfaceUnit->SelectThis_Implementation();
+						UnitsSelected.AddUnique(UnitsUnderRectangle[i]);
+						PlayerController->ClearSelectedBuilding_Implementation();
+
+						
+					}
 				}
 			}
+			
+			
+
+
+			
 		}
 		UE_LOG(LogTemp, Warning, TEXT("The Selected value is: %d"), UnitsSelected.Num());
 

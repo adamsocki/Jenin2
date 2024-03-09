@@ -55,5 +55,11 @@ public:
 	UMaterialInterface* HighlightedDecalMaterial;
 
 	
+	UPROPERTY(Replicated)
+	int32 TeamNumber;
+	UPROPERTY(Replicated)
+	FLinearColor TeamColor;
+
+	virtual int32 GetTeam_Implementation() override;
 	
 };

@@ -43,6 +43,11 @@ public:
 	 
 	virtual void SetupInputComponent() override;
 	virtual void ClearSelectedBuilding_Implementation() override;
+	
+	UPROPERTY(Replicated)
+	int32 TeamNumber;
+	UPROPERTY(Replicated)
+	FLinearColor TeamColor;
 
 
 	UFUNCTION()
@@ -63,6 +68,9 @@ public:
 	AJeninBuilding *SelectedBuilding;
 
 	virtual void SetupPlayerStart_Implementation(AJeninPlayerStart* PlayerStart, int32 TeamNumber, FLinearColor TeamColor) override;
+
+
+	virtual bool IsOnMyTeam_Implementation(int32 teamNumber) override;
 	
 protected:
 	virtual void BeginPlay() override;

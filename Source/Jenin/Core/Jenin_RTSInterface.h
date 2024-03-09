@@ -58,4 +58,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "PlayerStart")
 	void SetupPlayerStart(AJeninPlayerStart* PlayerStart, int32 TeamNumber, FLinearColor TeamColor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	int32 GetTeam();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	bool IsOnMyTeam(int32 TeamNumber);
 };

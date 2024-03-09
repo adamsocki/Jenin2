@@ -2,6 +2,7 @@
 
 
 #include "JeninBuilding.h"
+#include "Net/UnrealNetwork.h"
 
 #include "Components/DecalComponent.h"
 
@@ -30,6 +31,14 @@ AJeninBuilding::AJeninBuilding()
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetReceivesDecals(false);
 }
+void AJeninBuilding::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AJeninBuilding, TeamNumber);
+	DOREPLIFETIME(AJeninBuilding, TeamColor);   
+}
+
 
 void AJeninBuilding::SelectThis_Implementation()
 {
@@ -48,11 +57,27 @@ void AJeninBuilding::DeselectThis_Implementation()
 void AJeninBuilding::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (StaticMesh)
+	{
+		UMaterialInterface* Material_0 = StaticMesh->GetMaterial(0);
+		if (Material_0)
+		{
+			UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(Material_0, NULL);
+			MaterialInstanceDynamic->SetVectorParameterValue("TeamColor",TeamColor);
+			StaticMesh->SetMaterial(0, MaterialInstanceDynamic);
+		}
+	}
 }
 
 // Called every frame
 void AJeninBuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+int32 AJeninBuilding::GetTeam_Implementation()
+{
+	return TeamNumber;
 }
 

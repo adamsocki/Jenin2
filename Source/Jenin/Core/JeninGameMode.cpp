@@ -24,6 +24,7 @@ AJeninGameMode::AJeninGameMode()
 	TeamColor.Add(FLinearColor::Green);
 	TeamColor.Add(FLinearColor::Yellow);
 	TeamNumber = 0;
+	
 }
 
 

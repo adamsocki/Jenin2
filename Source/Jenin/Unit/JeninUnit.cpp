@@ -2,6 +2,7 @@
 
 
 #include "JeninUnit.h"
+#include "Net/UnrealNetwork.h"
 
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
@@ -40,6 +41,13 @@ AJeninUnit::AJeninUnit()
 
 	this->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	bReplicates = true;
+}
+void AJeninUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AJeninUnit, TeamNumber);
+	DOREPLIFETIME(AJeninUnit, TeamColor);   
 }
 
 void AJeninUnit::SelectThis_Implementation()
@@ -144,6 +152,19 @@ void AJeninUnit::ServerMoveToLocationStarted_Implementation(FVector Location)
 void AJeninUnit::BeginPlay()
 {
 	 Super::BeginPlay();
+
+	USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
+	if (SkeletalMeshComponent)
+	{
+		UMaterialInterface* Material_0 = SkeletalMeshComponent->GetMaterial(0);
+		if (Material_0)
+		{
+			UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(Material_0, NULL);
+			MaterialInstanceDynamic->SetVectorParameterValue("ColorPanel",TeamColor);
+			SkeletalMeshComponent->SetMaterial(0, MaterialInstanceDynamic);
+		}
+	}
+
 	 MyUnitWidget = CreateWidget<UJenin_SelectedUnitWidget>(GetWorld(), UnitWidget);
 
 	 if (MyUnitWidget)
@@ -166,5 +187,10 @@ void AJeninUnit::Tick(float DeltaTime)
 void AJeninUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+int32 AJeninUnit::GetTeam_Implementation()
+{
+	return TeamNumber;
 }
 

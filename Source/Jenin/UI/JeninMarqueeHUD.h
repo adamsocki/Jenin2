@@ -48,6 +48,5 @@ public:
 
 	UPROPERTY()
 	TArray<AJeninUnit*> UnitsSelected;
-
 	
 };
