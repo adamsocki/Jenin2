@@ -24,6 +24,7 @@ void AJeninMarqueeHUD::BeginPlay()
 		MyUnitAreaWidget = CreateWidget<UJeninSelectedUnitArea>(GetWorld(), UnitAreaWidget);
 		MyUnitAreaWidget->AddToViewport();
 	}
+	
 }
 
 void AJeninMarqueeHUD::MarqueePressed_Implementation()

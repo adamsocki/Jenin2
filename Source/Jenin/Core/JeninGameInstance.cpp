@@ -26,45 +26,103 @@ void DestroyExistingSession()
 
 
 
-void UJeninGameInstance::HostSession()
+void UJeninGameInstance::HostSession(bool isLAN)
 {
 	DestroyExistingSession();
-	
-	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
-	if (OnlineSubsystem) 
-	{
-		IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
 
-		
-		if (SessionInterface.IsValid()) 
+	if (isLAN)
+	{
+		IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+		if (OnlineSubsystem) 
 		{
-			FOnlineSessionSettings SessionSettings;
-			// ... (configure your session settings)
-			SessionSettings.bIsLANMatch = false;  // Example: Set to true for LAN
-			SessionSettings.NumPublicConnections = 4; // Example: Max players
-			SessionSettings.bShouldAdvertise = true;
-			//SessionSettings.
-			if (SessionInterface->CreateSession(0, NAME_GameSession, SessionSettings))
+			IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+			
+			if (SessionInterface.IsValid()) 
 			{
-				UE_LOG(LogTemp, Warning, TEXT("HelloHelloHelloHelloHelloHelloHelloHello"));
-				FName Level = "JeninMap_001";
-				UGameplayStatics::OpenLevel(GetPrimaryPlayerController(),Level,false, "?listen");
+				FOnlineSessionSettings SessionSettings;
+				SessionSettings.bIsLANMatch = true; 
+				SessionSettings.NumPublicConnections = 4;
+				SessionSettings.bShouldAdvertise = true;
+				
+				if (SessionInterface->CreateSession(0, NAME_GameSession, SessionSettings))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("HelloHelloHelloHelloHelloHelloHelloHello"));
+					FName Level = "JeninMap_001";
+					UGameplayStatics::OpenLevel(GetPrimaryPlayerController(),Level,true, "?listen");
+				}
 			}
-			
-			
+		}
+	}
+	else
+	{
+		APlayerController* MyPlayerController = GetWorld()->GetFirstPlayerController();
+		if (MyPlayerController)
+		{
+			FString Command = TEXT("Open JeninMap_001?listen");
+			MyPlayerController->ConsoleCommand(Command, true); 
+		}
+	}
+
+	
+	
+}
+
+
+void UJeninGameInstance::OnFindSessionsComplete(bool wasSuccessful)
+{
+	if (wasSuccessful)
+	{
+		IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+		if (OnlineSubsystem) 
+		{
+			IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+			if (SessionInterface.IsValid())
+			{
+				TArray<FOnlineSessionSearchResult> SearchResults = SessionSearch->SearchResults;
+				
+				if (SearchResults.Num() > 0) 
+				{
+					const FOnlineSessionSearchResult& SearchResult = SearchResults[0];
+					SessionInterface->JoinSession(0, FName("MySessionName"), SearchResult);
+				}
+			}
 		}
 	}
 }
 
-void UJeninGameInstance::JoinSession()
+void UJeninGameInstance::JoinSession(bool isLAN)
 {
-	APlayerController* MyPlayerController = GetWorld()->GetFirstPlayerController();
-	if (MyPlayerController)
+	// APlayerController* MyPlayerController = GetWorld()->GetFirstPlayerController();
+	// if (MyPlayerController)
+	// {
+	// 	FString Command = TEXT("Open 127.0.0.1"); // Example command
+	// 	MyPlayerController->ConsoleCommand(Command, true); 
+	// }
+	//UGameplayStatics::ExecuteConsoleCommand(GetWorld(), TEXT("YourConsoleCommandHere"));
+	SessionSearch = MakeShareable(new FOnlineSessionSearch());
+	if (isLAN)
 	{
-		FString Command = TEXT("Open 127.0.0.1"); // Example command
-		MyPlayerController->ConsoleCommand(Command, true); 
+		APlayerController* MyPlayerController = GetWorld()->GetFirstPlayerController();
+		if (MyPlayerController)
+		{
+			IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+			if (OnlineSubsystem)
+			{
+				IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+			
+				SessionSearch->bIsLanQuery = true; 
+				SessionSearch->MaxSearchResults = 1;
+				
+
+				if (SessionInterface.IsValid())
+				{
+					SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UJeninGameInstance::OnFindSessionsComplete); 
+					SessionInterface->FindSessions(0,SessionSearch.ToSharedRef());
+				}
+			}
+		}
 	}
-	//UGameplayStatics::ExecuteConsoleCommand(GetWorld(), TEXT("YourConsoleCommandHere")); 
 }
+
 
 

@@ -41,6 +41,7 @@ AJeninUnit::AJeninUnit()
 
 	this->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	bReplicates = true;
+	bAlwaysRelevant=true;
 }
 void AJeninUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -192,5 +193,15 @@ void AJeninUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 int32 AJeninUnit::GetTeam_Implementation()
 {
 	return TeamNumber;
+}
+
+
+void AJeninUnit::BeginDestroy()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s is being destroyed!"), *GetName());
+	UE_LOG(LogTemp, Warning, TEXT("%s is being destroyed! Owner: %s, IsPendingKill: %d"), *GetName(), *GetNameSafe(GetOwner()), IsPendingKill());
+   
+	// ... potentially more detailed logging here ...
+	Super::BeginDestroy(); 
 }
 

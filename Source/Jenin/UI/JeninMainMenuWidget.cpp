@@ -17,7 +17,9 @@ void UJeninMainMenuWidget::NativeConstruct()
 	{
 		JoinButton->OnClicked.AddDynamic(this, &UJeninMainMenuWidget::OnJoinButtonClicked);
 	}
+	
 }
+
 
 void UJeninMainMenuWidget::OnHostButtonClicked()
 {
@@ -28,7 +30,7 @@ void UJeninMainMenuWidget::OnHostButtonClicked()
 	UJeninGameInstance *JeninGameInstance = Cast<UJeninGameInstance>(GetGameInstance());
 	if (JeninGameInstance)
 	{
-		JeninGameInstance->HostSession();
+		JeninGameInstance->HostSession(isLAN->IsChecked());
 	}
 	//OnHostButtonClicked_Implementation(); 
 }
@@ -40,10 +42,13 @@ void UJeninMainMenuWidget::OnJoinButtonClicked()
 	UJeninGameInstance *JeninGameInstance = Cast<UJeninGameInstance>(GetGameInstance());
 	if (JeninGameInstance)
 	{
-		JeninGameInstance->JoinSession();
+		JeninGameInstance->JoinSession(isLAN->IsChecked());
 	}
+
 	// Call the Blueprint implementation (if any)
 	//OnJoinButtonClicked_Implementation(); 
 }
+
+
 
 

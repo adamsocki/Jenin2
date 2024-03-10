@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineSessionSettings.h"
+
 #include "Engine/GameInstance.h"
 #include "JeninGameInstance.generated.h"
 
@@ -16,9 +18,13 @@ class JENIN_API UJeninGameInstance : public UGameInstance
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Session")
-	void HostSession();   
+	void HostSession(bool isLAN);   
 
 	UFUNCTION(BlueprintCallable, Category = "Session")
-	void JoinSession();  
+	void JoinSession(bool isLAN);  
 
+	void OnFindSessionsComplete(bool wasSuccessful);
+	
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+	
 };

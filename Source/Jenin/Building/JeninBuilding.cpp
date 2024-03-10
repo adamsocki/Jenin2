@@ -30,6 +30,9 @@ AJeninBuilding::AJeninBuilding()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetReceivesDecals(false);
+	
+	bReplicates = true;
+	bAlwaysRelevant=true;
 }
 void AJeninBuilding::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -45,12 +48,14 @@ void AJeninBuilding::SelectThis_Implementation()
 	IJenin_RTSInterface::SelectThis_Implementation();
 	SelectionDecal->SetVisibility(true);
 	UE_LOG(LogTemp, Warning, TEXT("Hello"));
+	MyBuildingSelectedWidget->AddToViewport();
 }
 
 void AJeninBuilding::DeselectThis_Implementation()
 {
 	IJenin_RTSInterface::DeselectThis_Implementation();
 	SelectionDecal->SetVisibility(false);
+	MyBuildingSelectedWidget->RemoveFromParent();
 }
 
 // Called when the game starts or when spawned
@@ -58,6 +63,17 @@ void AJeninBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
+	MyBuildingSelectedWidget = CreateWidget<UJeninBuildingSelectedWidget>(GetWorld(), BuildingWidget);
+
+	if (MyBuildingSelectedWidget)
+	{
+		MyBuildingSelectedWidget->ActorReference = this;
+		// if (UnitImage)
+		// {
+		// 	MyUnitWidget->UnitImage->SetBrushFromTexture(UnitImage);
+		// }
+	}
+	
 	if (StaticMesh)
 	{
 		UMaterialInterface* Material_0 = StaticMesh->GetMaterial(0);
@@ -68,6 +84,8 @@ void AJeninBuilding::BeginPlay()
 			StaticMesh->SetMaterial(0, MaterialInstanceDynamic);
 		}
 	}
+
+	
 }
 
 // Called every frame

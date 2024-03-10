@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/CheckBox.h"
 #include "JeninMainMenuWidget.generated.h"
 
 /**
@@ -22,6 +23,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UButton* JoinButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UCheckBox* isLAN;
 	
 	UFUNCTION()
 	void OnHostButtonClicked();

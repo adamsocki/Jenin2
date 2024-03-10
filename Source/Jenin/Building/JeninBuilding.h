@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/UI/JeninBuildingSelectedWidget.h"
 #include "JeninBuilding.generated.h"
 
 UCLASS()
@@ -15,6 +16,9 @@ class JENIN_API AJeninBuilding : public AActor, public IJenin_RTSInterface
 public:
 	// Sets default values for this actor's properties
 	AJeninBuilding();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTexture2D> BuildingImage;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UDecalComponent* SelectionDecal;
@@ -35,10 +39,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 	UPROPERTY(Replicated)
 	int32 TeamNumber;
 	UPROPERTY(Replicated)
 	FLinearColor TeamColor;
 
 	virtual int32 GetTeam_Implementation() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UJeninBuildingSelectedWidget> BuildingWidget;
+	
+	UPROPERTY()
+	UJeninBuildingSelectedWidget *MyBuildingSelectedWidget;
+
+	FString BuildingName;
+	
 };

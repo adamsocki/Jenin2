@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystemInterface.h"
 #include "Jenin/Building/JeninBuilding.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/UI/JeninEdgeScroll.h"
 #include "Jenin/UI/JeninSelectedUnitArea.h"
 
 #include "JeninPlayerController.generated.h"
@@ -37,7 +38,12 @@ public:
 
 	UPROPERTY()
 	TSubclassOf<AActor> UnitBPClass;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UJeninEdgeScroll> EdgeScrollWidget;
+
+	UPROPERTY()
+	UJeninEdgeScroll* MyEdgeScrollWidget;	
 
 	bool IsLeftMouseButtonPressed;
 	 
@@ -71,6 +77,8 @@ public:
 
 
 	virtual bool IsOnMyTeam_Implementation(int32 teamNumber) override;
+
+	
 	
 protected:
 	virtual void BeginPlay() override;

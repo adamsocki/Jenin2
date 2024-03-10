@@ -29,6 +29,16 @@ public:
 	bool MoveS;
 	bool MoveD;
 
+
+	bool IsOverBottomEdge;
+	bool IsOverBottomLeft;
+	bool IsOverBottomRight;
+	bool IsOverTopEdge;
+	bool IsOverTopLeft;
+	bool IsOverTopRight;
+	bool IsOverLeftEdge;
+	bool IsOverRightEdge;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,6 +46,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

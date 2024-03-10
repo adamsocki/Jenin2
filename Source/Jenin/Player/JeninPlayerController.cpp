@@ -56,6 +56,7 @@ void AJeninPlayerController::ClearSelectedBuilding_Implementation()
 		SelectedBuilding->DeselectThis_Implementation();
 		SelectedBuilding = nullptr;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("This shouldng happen yet"));
 }
 
 void AJeninPlayerController::ServerMoveToLocationStarted_Implementation(AJeninUnit* Unit, FVector Location)
@@ -148,7 +149,7 @@ void AJeninPlayerController::BeginPlay()
 		this->bEnableClickEvents = true;
 		this->bEnableMouseOverEvents = true;
 		FInputModeGameAndUI InputMode;
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture);
 		InputMode.SetHideCursorDuringCapture(false);
 		this->SetInputMode(InputMode);
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
@@ -156,6 +157,13 @@ void AJeninPlayerController::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	// if (EdgeScrollWidget)
+	// {
+	// 	MyEdgeScrollWidget = CreateWidget<UJeninEdgeScroll>(GetWorld(), EdgeScrollWidget);
+	// 	MyEdgeScrollWidget->AddToViewport();
+	// 	
+	// }
 }
 
 void AJeninPlayerController::Tick(float DeltaSeconds)
@@ -182,10 +190,7 @@ void AJeninPlayerController::Tick(float DeltaSeconds)
 					{
 						SelectedBuilding->SelectThis_Implementation();
 						UE_LOG(LogTemp, Warning, TEXT("SelectThisSholundwixk"));
-
 					}
-					
-					
 				}
 			}
 			AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());
@@ -198,7 +203,6 @@ void AJeninPlayerController::Tick(float DeltaSeconds)
 				}   
 			} 
 		}
-		
 	}
 }
 
