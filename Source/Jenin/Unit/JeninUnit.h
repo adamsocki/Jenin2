@@ -62,4 +62,7 @@ public:
 	virtual int32 GetTeam_Implementation() override;
 
 	virtual void BeginDestroy() override;
+
+	UPROPERTY(EditAnywhere)
+	float ProductionTime;
 };

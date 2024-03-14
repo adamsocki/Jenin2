@@ -23,6 +23,7 @@ AJeninCameraPawn::AJeninCameraPawn()
 	Camera->SetRelativeRotation(NewRotation);
 
 	IsOverBottomEdge = false;
+	SpringArm->bEnableCameraLag = true;
 }
 
 // Called when the game starts or when spawned
@@ -48,7 +49,9 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 		PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
 		PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
 
-		
+		// @TODO -> Get Distance to floor to scale speed 
+		// @TODO -> Get Distance to move up/down for terrain adjustment 
+
 		if (IsOverTopEdge)
 		{
 			FVector DeltaLocation = {};
@@ -101,24 +104,6 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 			DeltaLocation.Y =  (ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
 			AddActorWorldOffset(DeltaLocation);
 		}
-		//
-		// if (MousePosition.Y / ViewportSizeY > 0.98f)
-		// {
-		// 	FVector DeltaLocation = {};
-		// 	DeltaLocation.X = -ScrollSpeed * GetWorld()->GetDeltaSeconds();
-		// 	AddActorWorldOffset(DeltaLocation);
-		// }
-		// else if (MousePosition.Y / ViewportSizeX < 0.02f)
-		// {
-		// 	FVector DeltaLocation = {};
-		// 	DeltaLocation.X = ScrollSpeed * GetWorld()->GetDeltaSeconds();
-		// 	AddActorWorldOffset(DeltaLocation);
-		// }
-		// if (MousePosition.X >= 0 && MousePosition.X <= ViewportSizeX &&
-		//    MousePosition.Y >= 0 && MousePosition.Y <= ViewportSizeY)
-		// {
-		
-		// }
 	}
 }
 
@@ -126,8 +111,6 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 void AJeninCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-
 	
 }
 

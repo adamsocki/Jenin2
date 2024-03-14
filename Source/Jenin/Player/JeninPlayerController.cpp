@@ -7,8 +7,8 @@
 #include "DetourCrowdAIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "JeninCameraPawn.h"
 #include "Components/HorizontalBox.h"
-#include "Jenin/Building/JeninBuilding.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
 #include "Jenin/UI/JeninMarqueeHUD.h"
 
@@ -17,6 +17,9 @@ AJeninPlayerController::AJeninPlayerController()
 	ClickedLocation = {};
 	IsLeftMouseButtonPressed = {};
 
+
+	MouseZoomSpeed = 1000.0f;
+	
 	static ConstructorHelpers::FClassFinder<AActor> BPFinderBuilding(TEXT("Blueprint'/Game/App/Buildings/BP_JeninBuilding_Type001.BP_JeninBuilding_Type001_C'"));
 	if (BPFinderBuilding.Class != nullptr)
 	{
@@ -45,6 +48,13 @@ void AJeninPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnLeftMouseStarted);
 		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Completed, this, &AJeninPlayerController::OnLeftMouseCompleted);
 		EnhancedInputComponent->BindAction(MoveToLocationAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnMoveToLocationStarted);
+		
+		EnhancedInputComponent->BindAction(MouseScrollWheelAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnMouseScrollWheel);
+		
+
+
+
+
 	}
 }
 
@@ -121,10 +131,10 @@ void AJeninPlayerController::SetupPlayerStart_Implementation(AJeninPlayerStart* 
 		AJeninUnit* SpawnedUnit003 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_003->GetComponentLocation(), SpawnRotation);
 		SpawnedUnit003->TeamNumber = TeamNumber;
 		SpawnedUnit003->TeamColor = TeamColor;
-	
 	}
-	
 }
+
+
 
 bool AJeninPlayerController::IsOnMyTeam_Implementation(int32 teamNumber)
 {
@@ -139,6 +149,23 @@ bool AJeninPlayerController::IsOnMyTeam_Implementation(int32 teamNumber)
 	}
 	
 }
+
+void AJeninPlayerController::ProduceUnit_Implementation(AJeninBuilding* buildingReference, TSubclassOf<AJeninUnit> UnitToProduce)
+{
+
+	IJenin_RTSInterface::ProduceUnit_Implementation(buildingReference, UnitToProduce);
+	ServerProduceUnit(buildingReference, UnitToProduce);
+}
+
+void AJeninPlayerController::ServerProduceUnit_Implementation(AJeninBuilding* BuildingReference,
+	TSubclassOf<AJeninUnit> UnitToProduce)
+{
+	// @todo now: ask building to produce unit
+	UE_LOG(LogTemp, Warning, TEXT("ServerProduceUnit_Implementation"));
+
+	BuildingReference->AddUnitToQueue(UnitToProduce);
+}
+
 
 void AJeninPlayerController::BeginPlay()
 {
@@ -164,6 +191,8 @@ void AJeninPlayerController::BeginPlay()
 	// 	MyEdgeScrollWidget->AddToViewport();
 	// 	
 	// }
+
+	
 }
 
 void AJeninPlayerController::Tick(float DeltaSeconds)
@@ -186,11 +215,22 @@ void AJeninPlayerController::Tick(float DeltaSeconds)
 					
 
 					int32 BuildingTeam = SelectedBuilding->GetTeam_Implementation();
-					if (this->IsOnMyTeam_Implementation(BuildingTeam))
+					if (this->GetClass()->ImplementsInterface(UJenin_RTSInterface::StaticClass()))
 					{
-						SelectedBuilding->SelectThis_Implementation();
-						UE_LOG(LogTemp, Warning, TEXT("SelectThisSholundwixk"));
+						//if (this->IsOnMyTeam_Implementation(BuildingTeam))
+						if (IJenin_RTSInterface::Execute_IsOnMyTeam(this, BuildingTeam))
+						{
+							
+							if (SelectedBuilding->GetClass()->ImplementsInterface(UJenin_RTSInterface::StaticClass()))
+							{
+								IJenin_RTSInterface::Execute_SelectThis(SelectedBuilding);
+							}
+							UE_LOG(LogTemp, Warning, TEXT("SelectThisSholundwixk"));
+							
+						}
+						
 					}
+					
 				}
 			}
 			AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());
@@ -262,3 +302,17 @@ void AJeninPlayerController::OnMoveToLocationStarted(const FInputActionValue& Va
 	}
 }
 
+void AJeninPlayerController::OnMouseScrollWheel(const FInputActionValue& Value)
+{
+	AJeninCameraPawn* JeninCameraPawn = Cast<AJeninCameraPawn>(GetPawn());
+	// FVector CameraPosition = JeninCameraPawn->GetActorLocation();
+	// CameraPosition.Z = CameraPosition.Z + Value.Get<float>() * MouseZoomSpeed * GetWorld()->GetDeltaSeconds();
+	// JeninCameraPawn->SetActorLocation(CameraPosition);
+	UE_LOG(LogTemp, Warning, TEXT("Scroll"));
+	
+	FVector DeltaLocation = {};
+	DeltaLocation.Z = MouseZoomSpeed *Value.Get<float>();
+	JeninCameraPawn->AddActorWorldOffset(DeltaLocation);
+	// @TODO -> Get Distance to ground to prevent going below terrain  
+
+}

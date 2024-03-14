@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
 #include "Jenin/UI/JeninBuildingSelectedWidget.h"
+#include "Jenin/UI/JeninProduceUnitWidget.h"
 #include "JeninBuilding.generated.h"
 
 UCLASS()
@@ -17,19 +18,24 @@ public:
 	// Sets default values for this actor's properties
 	AJeninBuilding();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Building", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTexture2D> BuildingImage;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UDecalComponent* SelectionDecal;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UBoxComponent* UnitSpawnPoint;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Building", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* StaticMesh;
-
+	
 	UPROPERTY()
 	UMaterialInterface* SelectionDecalMaterial;
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void SelectThis(); virtual void SelectThis_Implementation() override;
 
-	virtual void SelectThis_Implementation() override;
 	virtual void DeselectThis_Implementation() override;
 protected:
 	// Called when the game starts or when spawned
@@ -47,12 +53,46 @@ public:
 
 	virtual int32 GetTeam_Implementation() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Building", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UJeninBuildingSelectedWidget> BuildingWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Building", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> ProductionWidget;
+	
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Building", meta = (AllowPrivateAccess = "true"))
+	// TArray<UJeninProduceUnitWidget*> ActionBoxButtonWidgets;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Building", meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<AJeninUnit>> SpawnableUnits;
+	
+	UFUNCTION()
+	void AddUnitToQueue(TSubclassOf<AJeninUnit> NewUnit);
+	
+	UPROPERTY(Replicated)
+	TArray<TSubclassOf<AJeninUnit>> UnitProductionQueue;
+
+	UPROPERTY()
+	TSubclassOf<AJeninUnit> UnitToProduce;
 	
 	UPROPERTY()
 	UJeninBuildingSelectedWidget *MyBuildingSelectedWidget;
 
-	FString BuildingName;
+	UPROPERTY(EditAnywhere)
+	FText BuildingName;
+
 	
+
+	bool IsProducingUnit;
+	
+	UFUNCTION()
+	void ProcessProductionQueue();
+
+	UPROPERTY(EditAnywhere)
+	float ProductionUnitTimerGranularity;
+
+	float ProductionTimeNeeded;
+	
+	float ProductionTimeSpent;
+	UPROPERTY(Replicated)
+	float ProductionProgress;
 };

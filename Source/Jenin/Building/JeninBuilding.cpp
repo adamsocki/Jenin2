@@ -5,6 +5,8 @@
 #include "Net/UnrealNetwork.h"
 
 #include "Components/DecalComponent.h"
+#include "Jenin/UI/JeninProduceUnitWidget.h"
+#include "Jenin/Unit/JeninUnit.h"
 
 // Sets default values
 AJeninBuilding::AJeninBuilding()
@@ -26,6 +28,9 @@ AJeninBuilding::AJeninBuilding()
 		SelectionDecalMaterial = SelectedMaterialAsset.Object;
 	}
 	SelectionDecal->SetVisibility(false);
+
+	UnitSpawnPoint = CreateDefaultSubobject<UBoxComponent>(TEXT("UnitSpawnPoint"));
+	UnitSpawnPoint->SetupAttachment(RootComponent);
 	
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
@@ -33,6 +38,11 @@ AJeninBuilding::AJeninBuilding()
 	
 	bReplicates = true;
 	bAlwaysRelevant=true;
+
+	IsProducingUnit = false;
+	ProductionTimeNeeded = 0.0f;
+	ProductionTimeSpent = 0.0f;
+	ProductionProgress = 0.0f;
 }
 void AJeninBuilding::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -40,6 +50,8 @@ void AJeninBuilding::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(AJeninBuilding, TeamNumber);
 	DOREPLIFETIME(AJeninBuilding, TeamColor);   
+	DOREPLIFETIME(AJeninBuilding, UnitProductionQueue);
+	DOREPLIFETIME(AJeninBuilding, ProductionProgress);
 }
 
 
@@ -47,7 +59,6 @@ void AJeninBuilding::SelectThis_Implementation()
 {
 	IJenin_RTSInterface::SelectThis_Implementation();
 	SelectionDecal->SetVisibility(true);
-	UE_LOG(LogTemp, Warning, TEXT("Hello"));
 	MyBuildingSelectedWidget->AddToViewport();
 }
 
@@ -65,14 +76,8 @@ void AJeninBuilding::BeginPlay()
 
 	MyBuildingSelectedWidget = CreateWidget<UJeninBuildingSelectedWidget>(GetWorld(), BuildingWidget);
 
-	if (MyBuildingSelectedWidget)
-	{
-		MyBuildingSelectedWidget->ActorReference = this;
-		// if (UnitImage)
-		// {
-		// 	MyUnitWidget->UnitImage->SetBrushFromTexture(UnitImage);
-		// }
-	}
+	
+	//for (Act)
 	
 	if (StaticMesh)
 	{
@@ -84,7 +89,48 @@ void AJeninBuilding::BeginPlay()
 			StaticMesh->SetMaterial(0, MaterialInstanceDynamic);
 		}
 	}
+	if (MyBuildingSelectedWidget)
+	{
+		MyBuildingSelectedWidget->ActorReference = this;
+		// if (UnitImage)
+		// {
+		// 	MyUnitWidget->UnitImage->SetBrushFromTexture(UnitImage);
+		// }
+		// for (int i = 0; i < ActionBoxButtonWidgets.Num(); i++)
+		// {
+		// 	
+		// 	UE_LOG(LogTemp, Warning, TEXT("UnitUNIT"));
+		// }
+		for (int i = 0; i < SpawnableUnits.Num(); i++)
+		{
+			if(UJeninProduceUnitWidget* NewWidget = CreateWidget<UJeninProduceUnitWidget>(MyBuildingSelectedWidget,ProductionWidget))
+			{
+				MyBuildingSelectedWidget->ActionBox->AddChildToWrapBox(NewWidget);
+				NewWidget->BuildingReference = this;
+				NewWidget->UnitToProduce = SpawnableUnits[i];
+				NewWidget->SetVisibility(ESlateVisibility::Visible); 
+			
+			}
+			//MyUnitWidget->BuildingReference = this;
+			
+			
 
+			//ActionBoxButtonWidgets.AddUnique(MyUnitWidget);
+			UE_LOG(LogTemp, Warning, TEXT("UnitAdd"));
+	
+		}
+	}
+
+	// HANDLE UNIT PRODUCTION QUEUE
+	if (HasAuthority())
+	{
+		FTimerHandle TimerHandle;
+		float TimerInterval = 0.05f;  // Example: Timer fires every 2 seconds
+		bool bShouldLoop = true; // Whether it should repeat
+
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJeninBuilding::ProcessProductionQueue, TimerInterval, bShouldLoop);
+
+	}
 	
 }
 
@@ -97,5 +143,56 @@ void AJeninBuilding::Tick(float DeltaTime)
 int32 AJeninBuilding::GetTeam_Implementation()
 {
 	return TeamNumber;
+}
+
+void AJeninBuilding::AddUnitToQueue(TSubclassOf<AJeninUnit> NewUnit)
+{
+	UnitProductionQueue.Add(NewUnit);
+	UE_LOG(LogTemp, Warning, TEXT("AddUnitToQueue"));
+
+}
+
+void AJeninBuilding::ProcessProductionQueue()
+{
+
+	if (IsProducingUnit)	
+	{
+		
+		ProductionTimeSpent += ProductionUnitTimerGranularity;
+		ProductionProgress = ProductionTimeSpent / ProductionTimeNeeded;
+		UE_LOG(LogTemp, Log, TEXT("ProductionTimeSpent updated: %f"), ProductionTimeSpent);
+
+		UE_LOG(LogTemp, Log, TEXT("ProductionProgress calculated: %f"), ProductionProgress);
+		UE_LOG(LogTemp, Log, TEXT("ProductionTimeNeeded calculated: %f"), ProductionTimeNeeded);
+
+		if (ProductionProgress >= 1.0f)
+		{
+			FActorSpawnParameters SpawnUnitParameters;
+			SpawnUnitParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			//SpawnBuildingParameters.Owner = this;
+			FRotator SpawnRotation = {};
+			AJeninUnit* SpawnedUnit = GetWorld()->SpawnActor<AJeninUnit>(UnitToProduce, UnitSpawnPoint->GetComponentLocation(), SpawnRotation);
+			SpawnedUnit->TeamNumber = TeamNumber;
+			SpawnedUnit->TeamColor = TeamColor;
+
+			ProductionProgress = 0.0f;
+			ProductionTimeSpent = 0.0f;
+			UnitToProduce = nullptr;
+			IsProducingUnit = false;
+		}
+	}
+	else if (UnitProductionQueue.Num() > 0)		// Get Unit from Queue
+	{
+
+
+		UnitToProduce = UnitProductionQueue[0]; 
+		ProductionTimeNeeded = UnitToProduce->GetDefaultObject<AJeninUnit>()->ProductionTime;
+		UE_LOG(LogTemp, Warning, TEXT("UnitProductionQueue.Num"));
+		UnitProductionQueue.RemoveAt(0);
+		IsProducingUnit = true;
+		
+	}
+	
+	
 }
 

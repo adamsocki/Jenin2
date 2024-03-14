@@ -26,7 +26,7 @@ public:
 	UBoxComponent* Unit_002;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UBoxComponent* Unit_003;
-	
+
 
 protected:
 	// Called when the game starts or when spawned
