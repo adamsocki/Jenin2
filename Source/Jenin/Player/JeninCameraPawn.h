@@ -13,22 +13,21 @@ class JENIN_API AJeninCameraPawn : public APawn
 {
 	GENERATED_BODY()
 
+public:
+	// Sets default values for this pawn's properties
+	AJeninCameraPawn();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> Camera = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> SpringArm = nullptr;
 
-public:
-	// Sets default values for this pawn's properties
-	AJeninCameraPawn();
-
 	float ScrollSpeed = 700.0f;
 	bool MoveW;
 	bool MoveA;
 	bool MoveS;
 	bool MoveD;
-
 
 	bool IsOverBottomEdge;
 	bool IsOverBottomLeft;
@@ -47,7 +46,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	float Target_TargetArmLength;
 };

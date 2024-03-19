@@ -3,6 +3,7 @@
 #include "JeninCameraPawn.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "JeninPlayerController.h"
 
 // Sets default values
 AJeninCameraPawn::AJeninCameraPawn()
@@ -23,6 +24,8 @@ AJeninCameraPawn::AJeninCameraPawn()
 	Camera->SetRelativeRotation(NewRotation);
 
 	IsOverBottomEdge = false;
+	SpringArm->bEnableCameraLag = true;
+	Target_TargetArmLength = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -40,94 +43,89 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	// CAMERA MOVEMENT AT EDGE OF VIEWPORT
-	if(APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if(AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(Controller))
 	{
 		FVector MousePosition = {};
 		int32 ViewportSizeX = {};
 		int32 ViewportSizeY = {};
-		PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
-		PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+		JeninPlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
+		JeninPlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
 
+		// @TODO -> Get Distance to floor to scale speed 
+		// @TODO -> Get Distance to move up/down for terrain adjustment
+
+		float ScrollSpeedToApply = ScrollSpeed;
+		if (JeninPlayerController->LeftShiftButtonDown)
+		{
+			ScrollSpeedToApply *= 4;
+			
+		}
 		
+			
+
 		if (IsOverTopEdge)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.X = ScrollSpeed * GetWorld()->GetDeltaSeconds();
+			DeltaLocation.X = ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
 			AddActorWorldOffset(DeltaLocation);
 		}
 		else if (IsOverBottomEdge)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.X = -ScrollSpeed * GetWorld()->GetDeltaSeconds();
+			DeltaLocation.X = -ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
 			AddActorWorldOffset(DeltaLocation);
 		}
 		else if (IsOverLeftEdge)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.Y = -ScrollSpeed * GetWorld()->GetDeltaSeconds();
+			DeltaLocation.Y = -ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
 			AddActorWorldOffset(DeltaLocation);
 		}
 		else if (IsOverRightEdge)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.Y = ScrollSpeed * GetWorld()->GetDeltaSeconds();
+			DeltaLocation.Y = ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
 			AddActorWorldOffset(DeltaLocation);
 		}
 		else if (IsOverTopLeft)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.X =  (ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y = -(ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.X =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.Y = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
 			AddActorWorldOffset(DeltaLocation);
 		}
 		else if (IsOverTopRight)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.X =  (ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y =  (ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.X =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.Y =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
 			AddActorWorldOffset(DeltaLocation);
 		}
 		else if (IsOverBottomLeft)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.X = -(ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y = -(ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.X = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.Y = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
 			AddActorWorldOffset(DeltaLocation);
 		}
 		else if (IsOverBottomRight)
 		{
 			FVector DeltaLocation = {};
-			DeltaLocation.X = -(ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y =  (ScrollSpeed * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.X = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
+			DeltaLocation.Y =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
 			AddActorWorldOffset(DeltaLocation);
 		}
-		//
-		// if (MousePosition.Y / ViewportSizeY > 0.98f)
-		// {
-		// 	FVector DeltaLocation = {};
-		// 	DeltaLocation.X = -ScrollSpeed * GetWorld()->GetDeltaSeconds();
-		// 	AddActorWorldOffset(DeltaLocation);
-		// }
-		// else if (MousePosition.Y / ViewportSizeX < 0.02f)
-		// {
-		// 	FVector DeltaLocation = {};
-		// 	DeltaLocation.X = ScrollSpeed * GetWorld()->GetDeltaSeconds();
-		// 	AddActorWorldOffset(DeltaLocation);
-		// }
-		// if (MousePosition.X >= 0 && MousePosition.X <= ViewportSizeX &&
-		//    MousePosition.Y >= 0 && MousePosition.Y <= ViewportSizeY)
-		// {
-		
-		// }
 	}
+
+ // FloatInter
+	
+	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, Target_TargetArmLength, DeltaTime, 5.0f);
 }
 
 // Called to bind functionality to input
 void AJeninCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-
 	
 }
 

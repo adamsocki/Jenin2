@@ -22,9 +22,10 @@ class JENIN_API AJeninGameMode : public AGameModeBase, public IJenin_RTSInterfac
 
 	virtual void BeginPlay() override;
 public:
+	void OnLevelLoaded(AActor* LoadedActor, ULevel* LoadedLevel);
 	UPROPERTY()
 	TArray<AJeninPlayerStart*> PlayerStarts;
-
+	
 	int32 TeamNumber;
 	TArray<FLinearColor> TeamColor;
 

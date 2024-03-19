@@ -7,16 +7,23 @@
 #include "DetourCrowdAIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "JeninCameraPawn.h"
 #include "Components/HorizontalBox.h"
-#include "Jenin/Building/JeninBuilding.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/Resource/JeninResourceInterface.h"
+#include "Jenin/Resource/JeninResourceNode.h"
 #include "Jenin/UI/JeninMarqueeHUD.h"
 
 AJeninPlayerController::AJeninPlayerController()
 {
 	ClickedLocation = {};
 	IsLeftMouseButtonPressed = {};
+	MiddleMouseButtonDown = false;
+	LeftShiftButtonDown = false;
 
+	MouseZoomSpeed = 1000.0f;
+	bShowMouseCursor = false;
+	
 	static ConstructorHelpers::FClassFinder<AActor> BPFinderBuilding(TEXT("Blueprint'/Game/App/Buildings/BP_JeninBuilding_Type001.BP_JeninBuilding_Type001_C'"));
 	if (BPFinderBuilding.Class != nullptr)
 	{
@@ -45,6 +52,19 @@ void AJeninPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnLeftMouseStarted);
 		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Completed, this, &AJeninPlayerController::OnLeftMouseCompleted);
 		EnhancedInputComponent->BindAction(MoveToLocationAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnMoveToLocationStarted);
+		
+		EnhancedInputComponent->BindAction(MouseScrollWheelAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnMouseScrollWheel);
+		
+		EnhancedInputComponent->BindAction(MouseMiddleButtonAction, ETriggerEvent::Triggered, this, &AJeninPlayerController::OnMiddleMousePressed);
+		EnhancedInputComponent->BindAction(MouseMiddleButtonAction, ETriggerEvent::Completed, this, &AJeninPlayerController::OnMiddleMouseReleased);
+
+		
+		EnhancedInputComponent->BindAction(LeftShiftAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnLeftShiftPressed);
+		EnhancedInputComponent->BindAction(LeftShiftAction, ETriggerEvent::Completed, this, &AJeninPlayerController::OnLeftShiftReleased);
+
+		
+		//EnhancedInputComponent->BindAction(MouseAxisAction, ETriggerEvent::Triggered, this, &AJeninPlayerController::MouseAxisModify);
+
 	}
 }
 
@@ -105,7 +125,8 @@ void AJeninPlayerController::SetupPlayerStart_Implementation(AJeninPlayerStart* 
 		SpawnedBuilding->TeamColor = TeamColor;
 		
 		FActorSpawnParameters SpawnUnit001Parameters;
-		SpawnUnit001Parameters.Owner = this;
+		//SpawnUnit001Parameters.Owner = this;
+		
 		AJeninUnit* SpawnedUnit001 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_001->GetComponentLocation(), SpawnRotation);
 		SpawnedUnit001->TeamNumber = TeamNumber;
 		SpawnedUnit001->TeamColor = TeamColor;
@@ -121,14 +142,13 @@ void AJeninPlayerController::SetupPlayerStart_Implementation(AJeninPlayerStart* 
 		AJeninUnit* SpawnedUnit003 = GetWorld()->SpawnActor<AJeninUnit>(UnitBPClass, PlayerStart->Unit_003->GetComponentLocation(), SpawnRotation);
 		SpawnedUnit003->TeamNumber = TeamNumber;
 		SpawnedUnit003->TeamColor = TeamColor;
-	
 	}
-	
 }
+
+
 
 bool AJeninPlayerController::IsOnMyTeam_Implementation(int32 teamNumber)
 {
-	
 	if (TeamNumber == teamNumber)
 	{
 		return true;
@@ -137,8 +157,23 @@ bool AJeninPlayerController::IsOnMyTeam_Implementation(int32 teamNumber)
 	{
 		return false;
 	}
-	
 }
+
+void AJeninPlayerController::ProduceUnit_Implementation(AJeninBuilding* buildingReference, TSubclassOf<AJeninUnit> UnitToProduce)
+{
+	IJenin_RTSInterface::ProduceUnit_Implementation(buildingReference, UnitToProduce);
+	ServerProduceUnit(buildingReference, UnitToProduce);
+}
+
+void AJeninPlayerController::ServerProduceUnit_Implementation(AJeninBuilding* BuildingReference,
+	TSubclassOf<AJeninUnit> UnitToProduce)
+{
+	// @todo now: ask building to produce unit
+	UE_LOG(LogTemp, Warning, TEXT("ServerProduceUnit_Implementation"));
+
+	BuildingReference->AddUnitToQueue(UnitToProduce);
+}
+
 
 void AJeninPlayerController::BeginPlay()
 {
@@ -164,6 +199,8 @@ void AJeninPlayerController::BeginPlay()
 	// 	MyEdgeScrollWidget->AddToViewport();
 	// 	
 	// }
+
+	
 }
 
 void AJeninPlayerController::Tick(float DeltaSeconds)
@@ -183,14 +220,21 @@ void AJeninPlayerController::Tick(float DeltaSeconds)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("HitBuilding"));
 					SelectedBuilding = Cast<AJeninBuilding>(HitResult.GetActor());
-					
-
 					int32 BuildingTeam = SelectedBuilding->GetTeam_Implementation();
-					if (this->IsOnMyTeam_Implementation(BuildingTeam))
+					if (this->GetClass()->ImplementsInterface(UJenin_RTSInterface::StaticClass()))
 					{
-						SelectedBuilding->SelectThis_Implementation();
-						UE_LOG(LogTemp, Warning, TEXT("SelectThisSholundwixk"));
+						if (IJenin_RTSInterface::Execute_IsOnMyTeam(this, BuildingTeam))
+						{
+							if (SelectedBuilding->GetClass()->ImplementsInterface(UJenin_RTSInterface::StaticClass()))
+							{
+								IJenin_RTSInterface::Execute_SelectThis(SelectedBuilding);
+							}
+							UE_LOG(LogTemp, Warning, TEXT("SelectThisSholundwixk"));
+							
+						}
+						
 					}
+					
 				}
 			}
 			AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());
@@ -240,21 +284,46 @@ void AJeninPlayerController::OnMoveToLocationStarted(const FInputActionValue& Va
 	bool HitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 	if (HitSuccessful)
 	{
-		AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());
-		if (MarqueeHUD)
+		if (AJeninResourceNode* JeninResourceNode = Cast<AJeninResourceNode>(Hit.GetActor()))
 		{
-			IJenin_RTSInterface* JeninInterface = Cast<IJenin_RTSInterface>(MarqueeHUD);
-			if (JeninInterface)
+			AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());
+			if (MarqueeHUD)
 			{
-				TArray<AJeninUnit*> units = JeninInterface->GrabSelectedUnits_Implementation();
-				if (units.Num() > 0)
+				IJenin_RTSInterface* JeninInterface = Cast<IJenin_RTSInterface>(MarqueeHUD);
+				if (JeninInterface)
 				{
-					UE_LOG(LogTemp, Display, TEXT("Move command initiated for %d selected units. Target Location: %s"), units.Num(), *Hit.Location.ToString());
+					TArray<AJeninUnit*> units = JeninInterface->GrabSelectedUnits_Implementation();
+
 					for (int i = 0 ; i < units.Num(); i++)
 					{
-						ServerMoveToLocationStarted(units[i],Hit.Location);
-						//units[i]->ServerMoveToLocationStarted(Hit.Location);
+						if (units[i]->GetClass()->ImplementsInterface(UJeninResourceInterface::StaticClass()))
+						{
+							ServerPassThroughSetIsWorking(units[i], JeninResourceNode);
 
+						}
+						//ServerMoveToLocationStarted(units[i],Hit.Location);
+						//units[i]->ServerMoveToLocationStarted(Hit.Location);
+					}
+				}
+			}
+		}
+		else
+		{
+			AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());
+			if (MarqueeHUD)
+			{
+				IJenin_RTSInterface* JeninInterface = Cast<IJenin_RTSInterface>(MarqueeHUD);
+				if (JeninInterface)
+				{
+					TArray<AJeninUnit*> units = JeninInterface->GrabSelectedUnits_Implementation();
+					if (units.Num() > 0)
+					{
+						UE_LOG(LogTemp, Display, TEXT("Move command initiated for %d selected units. Target Location: %s"), units.Num(), *Hit.Location.ToString());
+						for (int i = 0 ; i < units.Num(); i++)
+						{
+							ServerMoveToLocationStarted(units[i],Hit.Location);
+							//units[i]->ServerMoveToLocationStarted(Hit.Location);
+						}
 					}
 				}
 			}
@@ -262,3 +331,74 @@ void AJeninPlayerController::OnMoveToLocationStarted(const FInputActionValue& Va
 	}
 }
 
+void AJeninPlayerController::OnMouseScrollWheel(const FInputActionValue& Value)
+{
+	if (Value.GetMagnitude() != 0.0f)
+	{
+		float ZoomSpeedApply = 500.0f;
+		if (LeftShiftButtonDown)
+		{
+			ZoomSpeedApply *= 4.0f;
+		}
+		AJeninCameraPawn* JeninCameraPawn = Cast<AJeninCameraPawn>(GetPawn());
+		
+		JeninCameraPawn->Target_TargetArmLength = FMath::Clamp(JeninCameraPawn->SpringArm->TargetArmLength + Value.GetMagnitude() * - ZoomSpeedApply, 10.0f, 60000.0f);
+	}
+	
+
+	// FVector CameraPosition = JeninCameraPawn->GetActorLocation();
+	// CameraPosition.Z = CameraPosition.Z + Value.Get<float>() * MouseZoomSpeed * GetWorld()->GetDeltaSeconds();
+	// JeninCameraPawn->SetActorLocation(CameraPosition);
+	// UE_LOG(LogTemp, Warning, TEXT("Scroll"));
+	//
+	// FVector DeltaLocation = {};
+	// DeltaLocation.Z = MouseZoomSpeed *Value.Get<float>();
+	// JeninCameraPawn->AddActorWorldOffset(DeltaLocation);
+	// // @TODO -> Get Distance to ground to prevent going below terrain  
+
+}
+
+void AJeninPlayerController::OnMiddleMousePressed(const FInputActionValue& Value)
+{
+	MiddleMouseButtonDown = true;
+	UE_LOG(LogTemp, Warning, TEXT("OnMiddleMousePressed"));
+	FVector CurrentAxis = InputComponent->GetVectorAxisValue(FName("MouseAxisMapping"));  // Replace "MoveForward" with your actual axis name
+	UE_LOG(LogTemp, Warning, TEXT("The vector value is: %s"), *CurrentAxis.ToString());
+}
+
+void AJeninPlayerController::OnMiddleMouseReleased(const FInputActionValue& Value)
+{
+	MiddleMouseButtonDown = false;
+	UE_LOG(LogTemp, Warning, TEXT("OnMiddleMouseReleased"));
+}
+
+void AJeninPlayerController::OnLeftShiftPressed(const FInputActionValue& Value)
+{
+	LeftShiftButtonDown = true;
+	UE_LOG(LogTemp, Warning, TEXT("OnLeftShiftPressed"));
+
+}
+
+void AJeninPlayerController::OnLeftShiftReleased(const FInputActionValue& Value)
+{
+	LeftShiftButtonDown = false;
+	UE_LOG(LogTemp, Warning, TEXT("OnLeftShiftReleased"));
+}
+
+// void AJeninPlayerController::MouseAxisModify(const FInputActionValue& Value)
+// {
+// 	UE_LOG(LogTemp, Warning, TEXT("The vector value is: %s"), *Value.Get<FVector2D>().ToString());
+// 	UE_LOG(LogTemp, Warning, TEXT("MouseAxisModify triggered! Vector value: %s"), *Value.Get<FVector2D>().ToString());
+//
+// }
+
+
+void AJeninPlayerController::ServerPassThroughSetIsWorking_Implementation(AJeninUnit* Unit,
+                                                                          AJeninResourceNode* ResourceNode)
+{
+	if (IJeninResourceInterface* JeninResourceInterface = Cast<IJeninResourceInterface>(Unit))
+	{
+		JeninResourceInterface->Execute_SetIsWorkingOnResource(Unit, ResourceNode);
+	}
+	
+}

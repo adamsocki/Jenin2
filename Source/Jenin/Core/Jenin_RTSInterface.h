@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "Jenin/Unit/JeninUnit.h"
 #include "Jenin/Player/JeninPlayerStart.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
 #include "UObject/Interface.h"
 #include "Jenin_RTSInterface.generated.h"
 
+class AJeninBuilding;
 class AJeninUnit;
 // This class does not need to be modified.
 UINTERFACE()
@@ -64,4 +64,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	bool IsOnMyTeam(int32 TeamNumber);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void ProduceUnit(AJeninBuilding *BuildingReference, TSubclassOf<AJeninUnit> UnitToProduce);
+	
 };

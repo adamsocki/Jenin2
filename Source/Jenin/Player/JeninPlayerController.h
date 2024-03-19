@@ -7,8 +7,8 @@
 #include "EnhancedInputSubsystemInterface.h"
 #include "Jenin/Building/JeninBuilding.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/Resource/JeninResourceNode.h"
 #include "Jenin/UI/JeninEdgeScroll.h"
-#include "Jenin/UI/JeninSelectedUnitArea.h"
 
 #include "JeninPlayerController.generated.h"
 
@@ -22,6 +22,9 @@ class JENIN_API AJeninPlayerController : public APlayerController, public IJenin
 
 	AJeninPlayerController();
 
+	//@TODO -> allow mouse pivot camera
+	//@TODO -> mouse wheel scroll camera
+	
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
@@ -33,6 +36,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveToLocationAction = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> MouseScrollWheelAction = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> MouseMiddleButtonAction = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> LeftShiftAction = nullptr;
+	
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputAction> MouseAxisAction = nullptr;
+	
 	UPROPERTY()
 	TSubclassOf<AActor> BuildingBPClass;
 
@@ -65,18 +80,49 @@ public:
 	UFUNCTION()
 	void OnMoveToLocationStarted(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void OnMouseScrollWheel(const FInputActionValue& Value);
+
 	UFUNCTION(Server, Reliable)
 	void ServerMoveToLocationStarted(AJeninUnit* Unit, FVector Location);
 
+	UFUNCTION(Server, Reliable)
+	void ServerPassThroughSetIsWorking(AJeninUnit* Unit, AJeninResourceNode* ResourceNode);
+
+	UFUNCTION()
+	void OnMiddleMousePressed(const FInputActionValue& Value);
+	UFUNCTION()
+	void OnMiddleMouseReleased(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void OnLeftShiftPressed(const FInputActionValue& Value);
+	UFUNCTION()
+	void OnLeftShiftReleased(const FInputActionValue& Value);
+	// UFUNCTION()
+	// void MouseAxisModify(const FInputActionValue& Value);
+
+	bool MiddleMouseButtonDown;
+	bool LeftShiftButtonDown;
+
 	FVector ClickedLocation;
+
+	UPROPERTY(EditAnywhere)
+	float MouseZoomSpeed;
 
 	UPROPERTY()
 	AJeninBuilding *SelectedBuilding;
 
-	virtual void SetupPlayerStart_Implementation(AJeninPlayerStart* PlayerStart, int32 TeamNumber, FLinearColor TeamColor) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void SetupPlayerStart(AJeninPlayerStart* PlayerStart, int32 _TeamNumber, FLinearColor _TeamColor); virtual void SetupPlayerStart_Implementation(AJeninPlayerStart* PlayerStart, int32 _TeamNumber, FLinearColor _TeamColor) override;
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void ProduceUnit(AJeninBuilding* BuildingReference, TSubclassOf<AJeninUnit> UnitToProduce); virtual void ProduceUnit_Implementation(AJeninBuilding* BuildingReference, TSubclassOf<AJeninUnit> UnitToProduce) override;
 
-	virtual bool IsOnMyTeam_Implementation(int32 teamNumber) override;
+	UFUNCTION(Server, Reliable)
+	void ServerProduceUnit(AJeninBuilding* BuildingReference, TSubclassOf<AJeninUnit> UnitToProduce);
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	bool IsOnMyTeam(int32 a); virtual bool IsOnMyTeam_Implementation(int32 teamNumber) override;
 
 	
 	
@@ -84,5 +130,4 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	// virtual void SetupPlayerInputComponent5(UInputComponent* PlayerInputComponent) override;
-	
 };
