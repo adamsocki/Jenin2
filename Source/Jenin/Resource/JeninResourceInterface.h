@@ -6,6 +6,8 @@
 
 #include "JeninResourceInterface.generated.h"
 
+class AJeninResourceNode;
+class AActor;
 // This class does not need to be modified.
 UINTERFACE()
 class UJeninResourceInterface : public UInterface
@@ -22,4 +24,15 @@ class JENIN_API IJeninResourceInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void SetIsWorkingOnResource(AJeninResourceNode* ResourceNode);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void SetNotWorking();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void Collect();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void DropOff();
+
 };

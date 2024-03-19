@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "JeninUnitActionWidget.generated.h"
 
 /**
@@ -13,4 +14,9 @@ UCLASS()
 class JENIN_API UJeninUnitActionWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UImage* UnitActionImage;
+	
 };

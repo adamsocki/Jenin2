@@ -15,16 +15,17 @@ AJeninGameMode::AJeninGameMode()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ActorClassToFind, FoundActors);
 	for (AActor* Actor : FoundActors)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("The Found value is: %d"), FoundActors.Num());
+
 		PlayerStarts.Add(Cast<AJeninPlayerStart>(Actor));
 	}
 
-
+	UE_LOG(LogTemp, Warning, TEXT("AJeninGameMode: "));
 	TeamColor.Add(FLinearColor::Red);
 	TeamColor.Add(FLinearColor::Blue);
 	TeamColor.Add(FLinearColor::Green);
 	TeamColor.Add(FLinearColor::Yellow);
 	TeamNumber = 0;
-	
 }
 
 
@@ -32,6 +33,23 @@ AJeninGameMode::AJeninGameMode()
 void AJeninGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	TSubclassOf<AActor> ActorClassToFind = AJeninPlayerStart::StaticClass(); 
+	TArray<AActor*> FoundActors; 
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ActorClassToFind, FoundActors);
+	for (AActor* Actor : FoundActors)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("The Found value is: %d"), FoundActors.Num());
+
+		PlayerStarts.Add(Cast<AJeninPlayerStart>(Actor));
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("AJeninGameMode: "));
+	TeamColor.Add(FLinearColor::Red);
+	TeamColor.Add(FLinearColor::Blue);
+	TeamColor.Add(FLinearColor::Green);
+	TeamColor.Add(FLinearColor::Yellow);
+	
 	if (AJeninPlayerController *JeninPlayerController = Cast<AJeninPlayerController>(NewPlayer))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("The integer value is: %d"), PlayerStarts.Num());
@@ -57,8 +75,17 @@ void AJeninGameMode::HandleStartingNewPlayer_Implementation(APlayerController* N
 					CameraPawn->SetActorRotation(FRotator(-120.0f, 0.0f, 0.0f)); 
 					JeninPlayerController->Possess(CameraPawn);
 					FLinearColor IndividualTeamColor = TeamColor[TeamNumber];
-					JeninPlayerController->SetupPlayerStart_Implementation(JeninPlayerStart, TeamNumber, IndividualTeamColor);
+					// JeninPlayerController->SetupPlayerStart_Implementation(JeninPlayerStart, TeamNumber, IndividualTeamColor);
+					if (JeninPlayerController->GetClass()->ImplementsInterface(UJenin_RTSInterface::StaticClass()))
+					{
+						IJenin_RTSInterface::Execute_SetupPlayerStart(JeninPlayerController, JeninPlayerStart, TeamNumber, IndividualTeamColor);
+						UE_LOG(LogTemp, Warning, TEXT("Execute_SetupPlayerStart"));
+
+					}
+					
+					UE_LOG(LogTemp, Warning, TEXT("The TeamN value is: %d"), TeamNumber);
 					TeamNumber++;
+					
 				}
 				else
 				{
@@ -81,6 +108,13 @@ void AJeninGameMode::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
+void AJeninGameMode::OnLevelLoaded(AActor* LoadedActor, ULevel* LoadedLevel)
+{
+
+	
+}
+
 
 void AJeninGameMode::SetupPlayerStart_Implementation(AJeninPlayerStart* PlayerStart, int32 teamNumber, FLinearColor teamColor)
 {

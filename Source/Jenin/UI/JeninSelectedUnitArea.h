@@ -17,5 +17,9 @@ class JENIN_API UJeninSelectedUnitArea : public UUserWidget
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-	class UHorizontalBox* UnitsBox;
+	class UWrapBox* UnitsBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	class UWrapBox* UnitActionsBox;
+
 };

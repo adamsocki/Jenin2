@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 
 #include "Components/DecalComponent.h"
+#include "Evaluation/IMovieSceneEvaluationHook.h"
 #include "Jenin/UI/JeninProduceUnitWidget.h"
 #include "Jenin/Unit/JeninUnit.h"
 
@@ -35,6 +36,7 @@ AJeninBuilding::AJeninBuilding()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingMesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 	StaticMesh->SetReceivesDecals(false);
+	StaticMesh->OnComponentBeginOverlap.AddDynamic(this, &AJeninBuilding::OnOverlapBegin);
 	
 	bReplicates = true;
 	bAlwaysRelevant=true;
@@ -43,6 +45,8 @@ AJeninBuilding::AJeninBuilding()
 	ProductionTimeNeeded = 0.0f;
 	ProductionTimeSpent = 0.0f;
 	ProductionProgress = 0.0f;
+
+	NeedToUpdateUI = false;
 }
 void AJeninBuilding::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -109,14 +113,15 @@ void AJeninBuilding::BeginPlay()
 				NewWidget->BuildingReference = this;
 				NewWidget->UnitToProduce = SpawnableUnits[i];
 				NewWidget->SetVisibility(ESlateVisibility::Visible); 
-			
+				UE_LOG(LogTemp, Warning, TEXT("The SpawnableUnits.Num value is: %d"), SpawnableUnits.Num());
+				UE_LOG(LogTemp, Warning, TEXT("The integer count is: %d"), i);
 			}
 			//MyUnitWidget->BuildingReference = this;
 			
 			
 
 			//ActionBoxButtonWidgets.AddUnique(MyUnitWidget);
-			UE_LOG(LogTemp, Warning, TEXT("UnitAdd"));
+		//	UE_LOG(LogTemp, Warning, TEXT("UnitAdd"));
 	
 		}
 	}
@@ -138,6 +143,54 @@ void AJeninBuilding::BeginPlay()
 void AJeninBuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	MyBuildingSelectedWidget->UnitProductionProgressBar->SetPercent(ProductionProgress);
+ /*        
+ //         		switch (UnitProductionQueue.Num())
+ //         		{
+ //         		case 1:
+ //         			{
+ //         				MyBuildingSelectedWidget->UnitProductionImage_1->SetBrushFromTexture(UnitProductionQueue[0]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_2->SetVisibility(ESlateVisibility::Hidden);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_3->SetVisibility(ESlateVisibility::Hidden);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_4->SetVisibility(ESlateVisibility::Hidden);
+ //         				break;
+ //         			}
+ //         		case 2:
+ //         			{
+ //         				MyBuildingSelectedWidget->UnitProductionImage_1->SetBrushFromTexture(UnitProductionQueue[0]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_2->SetBrushFromTexture(UnitProductionQueue[1]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_3->SetVisibility(ESlateVisibility::Hidden);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_4->SetVisibility(ESlateVisibility::Hidden);
+ //         				break;
+ //         			}
+ //         		case 3:
+ //         			{
+ //         				MyBuildingSelectedWidget->UnitProductionImage_1->SetBrushFromTexture(UnitProductionQueue[0]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_2->SetBrushFromTexture(UnitProductionQueue[1]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_3->SetBrushFromTexture(UnitProductionQueue[2]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_4->SetVisibility(ESlateVisibility::Hidden);
+ //         				break;
+ //         			}
+ //         		case 4:
+ //         			{
+ //         				MyBuildingSelectedWidget->UnitProductionImage_1->SetBrushFromTexture(UnitProductionQueue[0]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_2->SetBrushFromTexture(UnitProductionQueue[1]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_3->SetBrushFromTexture(UnitProductionQueue[2]->GetDefaultObject<AJeninUnit>()->UnitImage);
+ //         				MyBuildingSelectedWidget->UnitProductionImage_4->SetVisibility(ESlateVisibility::Hidden);
+ //         				break;
+ //         			}
+ //         		default:
+ //         			{
+ //         				break;
+ //         			}
+ //         		}
+	// if (NeedToUpdateUI)
+	// {
+	// 	
+	//
+	// }
+		*/
+	
 }
 
 int32 AJeninBuilding::GetTeam_Implementation()
@@ -165,15 +218,22 @@ void AJeninBuilding::ProcessProductionQueue()
 		UE_LOG(LogTemp, Log, TEXT("ProductionProgress calculated: %f"), ProductionProgress);
 		UE_LOG(LogTemp, Log, TEXT("ProductionTimeNeeded calculated: %f"), ProductionTimeNeeded);
 
+		// Update Building Selection UI
+		UE_LOG(LogTemp, Log, TEXT("ProductionProgress calculated: %f"), MyBuildingSelectedWidget->UnitProductionProgressBar->Percent);
+
+		NeedToUpdateUI = true;
+		
 		if (ProductionProgress >= 1.0f)
 		{
 			FActorSpawnParameters SpawnUnitParameters;
 			SpawnUnitParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 			//SpawnBuildingParameters.Owner = this;
 			FRotator SpawnRotation = {};
-			AJeninUnit* SpawnedUnit = GetWorld()->SpawnActor<AJeninUnit>(UnitToProduce, UnitSpawnPoint->GetComponentLocation(), SpawnRotation);
-			SpawnedUnit->TeamNumber = TeamNumber;
-			SpawnedUnit->TeamColor = TeamColor;
+			if (AJeninUnit* SpawnedUnit = GetWorld()->SpawnActor<AJeninUnit>(UnitToProduce, UnitSpawnPoint->GetComponentLocation(), SpawnRotation))
+			{
+				SpawnedUnit->TeamNumber = TeamNumber;
+				SpawnedUnit->TeamColor = TeamColor;
+			}
 
 			ProductionProgress = 0.0f;
 			ProductionTimeSpent = 0.0f;
@@ -183,16 +243,43 @@ void AJeninBuilding::ProcessProductionQueue()
 	}
 	else if (UnitProductionQueue.Num() > 0)		// Get Unit from Queue
 	{
-
+																			
 
 		UnitToProduce = UnitProductionQueue[0]; 
 		ProductionTimeNeeded = UnitToProduce->GetDefaultObject<AJeninUnit>()->ProductionTime;
+		MyBuildingSelectedWidget->UnitProductionImage->SetBrushFromTexture(UnitToProduce->GetDefaultObject<AJeninUnit>()->UnitImage);
+
 		UE_LOG(LogTemp, Warning, TEXT("UnitProductionQueue.Num"));
-		UnitProductionQueue.RemoveAt(0);
-		IsProducingUnit = true;
 		
+		UnitProductionQueue.RemoveAt(0);
+		
+		IsProducingUnit = true;
+
+		
+
+
 	}
+
+	
 	
 	
 }
+
+void AJeninBuilding::UpdateUI()
+{
+	
+}
+
+void AJeninBuilding::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (HasAuthority() && OtherActor->GetClass()->ImplementsInterface(UJeninResourceInterface::StaticClass()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ONOverlap"));
+		Execute_DropOff(OtherActor);
+	}
+}
+
+
+
 

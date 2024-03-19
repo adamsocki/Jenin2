@@ -37,6 +37,8 @@ public:
 	
 	virtual void NativeConstruct() override;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable) 
 	void OnProductionButtonClicked();
+
+	bool bIsUnitProductionInProgress;
 };

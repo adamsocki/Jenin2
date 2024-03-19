@@ -67,7 +67,7 @@ void AJeninMarqueeHUD::AddUnitToSelectedUnitsArea_Implementation(UJenin_Selected
 
 	if (MyUnitAreaWidget)
 	{
-		MyUnitAreaWidget->UnitsBox->AddChildToHorizontalBox(SelectedUnitWidget);
+		MyUnitAreaWidget->UnitsBox->AddChildToWrapBox(SelectedUnitWidget);
 	}
 }
 

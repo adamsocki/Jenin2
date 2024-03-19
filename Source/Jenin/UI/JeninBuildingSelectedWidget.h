@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
 #include "JeninBuildingSelectedWidget.generated.h"
@@ -31,5 +32,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UImage* BuildingImage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UProgressBar* UnitProductionProgressBar;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UImage* UnitProductionImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UImage* UnitProductionImage_1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UImage* UnitProductionImage_2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UImage* UnitProductionImage_3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UImage* UnitProductionImage_4;
 	//virtual void NativeConstruct() override;
 };

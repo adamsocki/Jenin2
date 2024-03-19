@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/Resource/JeninResourceInterface.h"
 #include "Jenin/UI/JeninBuildingSelectedWidget.h"
 #include "Jenin/UI/JeninProduceUnitWidget.h"
 #include "JeninBuilding.generated.h"
 
 UCLASS()
-class JENIN_API AJeninBuilding : public AActor, public IJenin_RTSInterface
+class JENIN_API AJeninBuilding : public AActor, public IJenin_RTSInterface, public IJeninResourceInterface
 {
 	GENERATED_BODY()
 
@@ -95,4 +96,13 @@ public:
 	float ProductionTimeSpent;
 	UPROPERTY(Replicated)
 	float ProductionProgress;
+
+	bool NeedToUpdateUI;
+	
+	//UFUNCTION()
+	void UpdateUI();
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
 };
