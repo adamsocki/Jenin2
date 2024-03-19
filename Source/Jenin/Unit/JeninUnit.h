@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
 #include "Jenin/Resource/JeninResourceInterface.h"
+#include "Jenin/UI/JeninUnitActionWidget.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
 #include "JeninUnit.generated.h"
 
@@ -26,6 +27,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* ResourceOverlapper;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UJeninUnitActionWidget*>UnitActions;
 
 	virtual void SelectThis_Implementation() override;
 	virtual void DeselectThis_Implementation() override;
