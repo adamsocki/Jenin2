@@ -81,9 +81,7 @@ void AJeninPlayerController::ClearSelectedBuilding_Implementation()
 
 void AJeninPlayerController::ServerMoveToLocationStarted_Implementation(AJeninUnit* Unit, FVector Location)
 {
-	
 	//Unit->UnitMoveCommand_Implementation(Location);
-
 	if (AAIController *UnitAIController = Unit->GetController<AAIController>())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UnitMov AIController Unit."));
@@ -243,7 +241,8 @@ void AJeninPlayerController::Tick(float DeltaSeconds)
 				IJenin_RTSInterface* JeninInterface = Cast<IJenin_RTSInterface>(MarqueeHUD);
 				if (JeninInterface)
 				{
-					JeninInterface->MarqueeHeld_Implementation();
+					IJenin_RTSInterface::Execute_MarqueeHeld(MarqueeHUD);
+					//JeninInterface->MarqueeHeld_Implementation();
 				}   
 			} 
 		}

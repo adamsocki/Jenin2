@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Jenin/Player/JeninPlayerStart.h"
+#include "Jenin/UI/JeninUnitActionWidget.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
 #include "UObject/Interface.h"
 #include "Jenin_RTSInterface.generated.h"
@@ -44,6 +45,8 @@ public:
 	TArray<AJeninUnit*> GrabSelectedUnits();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void AddUnitToSelectedUnitsArea(UJenin_SelectedUnitWidget* SelectedUnitWidget);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void AddUnitActionsToSelectedUnitActionsArea(UJeninUnitActionWidget* SelectedUnitActionWidget);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void ClearSelectedUnits();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")

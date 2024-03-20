@@ -27,11 +27,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* ResourceOverlapper;
-
-	UPROPERTY(EditAnywhere)
-	TArray<UJeninUnitActionWidget*>UnitActions;
-
-	virtual void SelectThis_Implementation() override;
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void SelectThis(); virtual void SelectThis_Implementation() override;
 	virtual void DeselectThis_Implementation() override;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void UnitMoveCommand(FVector Location);virtual void UnitMoveCommand_Implementation(FVector Location) override;
@@ -66,6 +64,12 @@ public:
 	UPROPERTY()
 	UJenin_SelectedUnitWidget *MyUnitWidget;
 
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<UJeninUnitActionWidget>>UnitActions;
+ 
+	UPROPERTY()
+	TArray<UJeninUnitActionWidget*> MyUnitActionWidgets;
+	
 	UPROPERTY()
 	UMaterialInterface* SelectionDecalMaterial;
 	UPROPERTY()
@@ -99,5 +103,4 @@ public:
 
 	UPROPERTY()
 	FTimerHandle TimerHandle;
-	
 };

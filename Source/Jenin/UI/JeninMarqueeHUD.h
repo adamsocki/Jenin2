@@ -24,20 +24,33 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void MarqueePressed_Implementation() override;
-	virtual void MarqueeHeld_Implementation() override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void MarqueeHeld(); virtual void MarqueeHeld_Implementation() override;
 	virtual void MarqueeReleased_Implementation() override;
 
 	virtual TArray<AJeninUnit*> GrabSelectedUnits_Implementation() override;
-	virtual void AddUnitToSelectedUnitsArea_Implementation(UJenin_SelectedUnitWidget* SelectedUnitWidget) override;
-	virtual void ClearSelectedUnits_Implementation() override;
-	virtual void SelectSingleUnit_Implementation(AActor* Unit) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void AddUnitToSelectedUnitsArea(UJenin_SelectedUnitWidget* SelectedUnitWidget);virtual void AddUnitToSelectedUnitsArea_Implementation(UJenin_SelectedUnitWidget* SelectedUnitWidget) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void AddUnitActionsToSelectedUnitActionsArea(UJeninUnitActionWidget* SelectedUnitActionWidget);virtual void AddUnitActionsToSelectedUnitActionsArea_Implementation(UJeninUnitActionWidget* SelectedUnitActionWidget) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void ClearSelectedUnits(); virtual void ClearSelectedUnits_Implementation() override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void SelectSingleUnit(AActor* Unit); virtual void SelectSingleUnit_Implementation(AActor* Unit) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UJeninSelectedUnitArea> UnitAreaWidget;
 
 	UPROPERTY()
-	UJeninSelectedUnitArea* MyUnitAreaWidget;	
+	UJeninSelectedUnitArea* MyUnitAreaWidget;
+	
+	UPROPERTY()
+	TSet<TSubclassOf<UJeninUnitActionWidget>> JeninUnitActionWidgetClasses;
 
+	UPROPERTY()
+	TArray<UJeninUnitActionWidget*> JeninUnitActionWidgets;
+
+	
 	virtual void DrawHUD() override;
 	
 	bool IsDrawing;

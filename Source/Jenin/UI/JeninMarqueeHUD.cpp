@@ -71,14 +71,38 @@ void AJeninMarqueeHUD::AddUnitToSelectedUnitsArea_Implementation(UJenin_Selected
 	}
 }
 
+void AJeninMarqueeHUD::AddUnitActionsToSelectedUnitActionsArea_Implementation(
+	UJeninUnitActionWidget* SelectedUnitActionWidget)
+{
+	 IJenin_RTSInterface::AddUnitActionsToSelectedUnitActionsArea_Implementation(SelectedUnitActionWidget);
+
+
+	if (MyUnitAreaWidget)
+	{
+		MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
+	}
+	
+	 // if (!JeninUnitActionWidgetClasses.Contains(SelectedUnitActionWidgetClass))
+	 // {
+	 // 	JeninUnitActionWidgetClasses.Add(SelectedUnitActionWidgetClass);
+	 // 	UJeninUnitActionWidget *UnitActionWidget = NewObject<UJeninUnitActionWidget>(this, SelectedUnitActionWidgetClass);
+	 // 	MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(UnitActionWidget);
+	 // 	JeninUnitActionWidgets.Add(UnitActionWidget);
+	 // }
+}
+
 void AJeninMarqueeHUD::ClearSelectedUnits_Implementation()
 {
 	IJenin_RTSInterface::ClearSelectedUnits_Implementation();
 	for (int i = 0; i < UnitsSelected.Num(); i++)
 	{
 		UnitsSelected[i]->DeselectThis_Implementation();
+		// @TODO NEED TO RERUN UNIT ACTION CHECK?
 	}
 	UnitsSelected.Empty();
+
+	
+	
 }
 
 void AJeninMarqueeHUD::SelectSingleUnit_Implementation(AActor* Unit)
@@ -90,7 +114,6 @@ void AJeninMarqueeHUD::SelectSingleUnit_Implementation(AActor* Unit)
 	}
 	IJenin_RTSInterface::SelectSingleUnit_Implementation(Unit);
 }
-
 
 
 void AJeninMarqueeHUD::DrawHUD()
@@ -106,45 +129,43 @@ void AJeninMarqueeHUD::DrawHUD()
 		
 		TArray<AJeninUnit*> UnitsUnderRectangle;
 		GetActorsInSelectionRectangle(StartingMousePosition, CurrentMousePosition, UnitsUnderRectangle, false, false);
-		//UE_LOG(LogTemp, Warning, TEXT("The under rect value is: %d"), UnitsUnderRectangle.Num());
+
+		
+		// GET THE ACTORS
 		for (int i = 0; i < UnitsUnderRectangle.Num(); i++)
 		{
-
 			int32 UnitTeam = UnitsUnderRectangle[i]->GetTeam_Implementation();
 			UE_LOG(LogTemp, Warning, TEXT("The integer value is: %d"), UnitTeam);
-			if (AJeninPlayerController *PlayerController = Cast<AJeninPlayerController>(GetOwningPlayerController()))
+			if (AJeninPlayerController *JeninPlayerController = Cast<AJeninPlayerController>(GetOwningPlayerController()))
 			{
-				if (PlayerController->IsOnMyTeam_Implementation(UnitTeam))
-				{
-					if (IJenin_RTSInterface *SelectionInterfaceUnit = Cast<IJenin_RTSInterface>(UnitsUnderRectangle[i]))
+				if (Cast<IJenin_RTSInterface>(JeninPlayerController))
+				{				
+					if (Execute_IsOnMyTeam(JeninPlayerController, UnitTeam))
 					{
-						SelectionInterfaceUnit->SelectThis_Implementation();
-						UnitsSelected.AddUnique(UnitsUnderRectangle[i]);
-						PlayerController->ClearSelectedBuilding_Implementation();
-
-						
+						if (Cast<IJenin_RTSInterface>(UnitsUnderRectangle[i]))
+						{
+							Execute_SelectThis(UnitsUnderRectangle[i]);
+							UnitsSelected.AddUnique(UnitsUnderRectangle[i]);
+							Execute_ClearSelectedBuilding(JeninPlayerController);
+							UE_LOG(LogTemp, Warning, TEXT("Execute_SelectThis"));
+							UE_LOG(LogTemp, Warning, TEXT("The Size of selected array value is: %d"), UnitsUnderRectangle[i]->UnitActions.Num());
+						}
 					}
 				}
-			}
-			
-			
-
-
-			
+			}			
 		}
-		UE_LOG(LogTemp, Warning, TEXT("The Selected value is: %d"), UnitsSelected.Num());
+		// UE_LOG(LogTemp, Warning, TEXT("The Selected value is: %d"), UnitsSelected.Num());
 
 		for (int i = 0; i < UnitsSelected.Num(); i++)
 		{
 			if (UnitsUnderRectangle.Find(UnitsSelected[i]) == INDEX_NONE)
 			{
-				if (IJenin_RTSInterface *SelectionInterfaceUnit = Cast<IJenin_RTSInterface>(UnitsSelected[i]))
+				if (Cast<IJenin_RTSInterface>(UnitsSelected[i]))
 				{
-					UnitsSelected[i]->DeselectThis_Implementation();
+					Execute_DeselectThis(UnitsSelected[i]);
 					UnitsSelected.RemoveAt(i);
 				}
 			}
 		}
 	}
 }
-

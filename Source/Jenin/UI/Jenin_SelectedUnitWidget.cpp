@@ -14,8 +14,11 @@ FReply UJenin_SelectedUnitWidget::NativeOnMouseButtonDown(const FGeometry& InGeo
 	{
 		if(AJeninMarqueeHUD* JeninPlayerHUD = Cast<AJeninMarqueeHUD>(GetOwningPlayer()->GetHUD()))
 		{
-			JeninPlayerHUD->ClearSelectedUnits_Implementation();
-			JeninPlayerHUD->SelectSingleUnit_Implementation(ActorReference);
+			if (Cast<IJenin_RTSInterface>(JeninPlayerHUD))
+			{
+				IJenin_RTSInterface::Execute_ClearSelectedUnits(JeninPlayerHUD);
+				IJenin_RTSInterface::Execute_SelectSingleUnit(JeninPlayerHUD, ActorReference);
+			}
 		}
 		return FReply::Handled();
 	}

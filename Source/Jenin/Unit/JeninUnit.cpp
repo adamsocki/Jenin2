@@ -65,7 +65,22 @@ void AJeninUnit::SelectThis_Implementation()
 	AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	if (MarqueeHUD && MyUnitWidget)
 	{
-		MarqueeHUD->AddUnitToSelectedUnitsArea_Implementation(MyUnitWidget);
+		if (Cast<IJenin_RTSInterface>(MarqueeHUD))
+		{
+			Execute_AddUnitToSelectedUnitsArea(MarqueeHUD, MyUnitWidget);
+			UE_LOG(LogTemp, Warning, TEXT("Execute_AddUnitToSelectedUnitsArea"));
+			// for (int i = 0; i < UnitActions.Num(); i++)
+			// {
+			// 	Execute_AddUnitActionsToSelectedUnitActionsArea(MarqueeHUD, UnitActions[i]);
+			// }
+
+			for (int i = 0; i < MyUnitActionWidgets.Num(); i++)
+			{
+				Execute_AddUnitActionsToSelectedUnitActionsArea(MarqueeHUD, MyUnitActionWidgets[i]);
+			}
+		}
+		
+		// MarqueeHUD->AddUnitToSelectedUnitsArea_Implementation(MyUnitWidget);
 	}
 }
 
@@ -78,6 +93,12 @@ void AJeninUnit::DeselectThis_Implementation()
 	{
 		MyUnitWidget->RemoveFromParent();
 	}
+	
+	for (int i = 0; i < MyUnitActionWidgets.Num(); i++)
+	{
+		MyUnitActionWidgets[i]->RemoveFromParent();
+	}
+	
 }
 
 void AJeninUnit::UnitMoveCommand_Implementation(FVector Location)
@@ -299,6 +320,15 @@ void AJeninUnit::BeginPlay()
 	 		MyUnitWidget->UnitImage->SetBrushFromTexture(UnitImage);
 	 	}
 	 }
+	
+	for (int i = 0; i < UnitActions.Num(); i++)
+	{
+		UJeninUnitActionWidget* MyUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(GetWorld(), UnitActions[i]);
+		if (MyUnitActionWidget)
+		{
+			MyUnitActionWidgets.Add(MyUnitActionWidget);
+		}
+	}
 }
 
 // Called every frame
