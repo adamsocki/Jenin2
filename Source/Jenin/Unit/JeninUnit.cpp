@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 
 #include "AIController.h"
+#include "EngineUtils.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/Image.h"
@@ -103,7 +104,6 @@ void AJeninUnit::DeselectThis_Implementation()
 
 void AJeninUnit::UnitMoveCommand_Implementation(FVector Location)
 {
-
 	IJenin_RTSInterface::UnitMoveCommand_Implementation(Location);
 	if (AAIController *UnitAIController = GetController<AAIController>())
 	{
@@ -119,7 +119,6 @@ void AJeninUnit::UnitMoveCommand_Implementation(FVector Location)
 		}
 		UnitAIController->StopMovement();
 		UnitAIController->MoveToLocation(Location);
-		
 	}
 	else
 	{
@@ -182,9 +181,38 @@ void AJeninUnit::DropOff_Implementation()
 	{
 		if(HasResource)
 		{
-			// Increment Resource amt
+			
+			if (AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(UGameplayStatics::GetPlayerController(this, TeamNumber)))
+			{
+				if (IJenin_RTSInterface* JeninInterface = Cast<IJenin_RTSInterface>(JeninPlayerController))
+				{
+					Execute_IncrementResourceAmount(JeninPlayerController, 1);
+					UE_LOG(LogTemp, Warning, TEXT("Execute_IncrementResourceAmount"));
+				}
+			}
+
+			
+			// UE_LOG(LogTemp, Warning, TEXT("The AJeninPlayerController Team number value is: %d"), JeninPlayerController->TeamNumber);//
+
+			// UWorld* MyWorld = GetWorld();
+			// if (MyWorld)
+			// {
+			// 	FConstPlayerControllerIterator iterator = MyWorld->GetPlayerControllerIterator();
+			// 	for (int i = 0; i < iterator->; i++)
+			// 	{
+			// 		
+			// 	}
+			// }
+			
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Unit DOES NOT HAVE A PLAYER CONTROLLER ASSIGNED"));
+			}
+			
 			HasResource = false;
 			Execute_UnitMoveCommand(this, ResourceNodeWorkingFrom->GetActorLocation());
+			
+
 		}
 		else
 		{
@@ -214,11 +242,9 @@ void AJeninUnit::SetIsWorkingOnResource_Implementation(AJeninResourceNode* Resou
 	{
 		if (AJeninBuilding* CurrentBuilding = Cast<AJeninBuilding>(FoundBuildings[i]))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("The integer value is: %d"), i);
-
+			// UE_LOG(LogTemp, Warning, TEXT("The integer value is: %d"), i);
 			if (CurrentBuilding->GetClass()->ImplementsInterface(UJenin_RTSInterface::StaticClass()))
-			{
-				
+			{	
 				UE_LOG(LogTemp, Warning, TEXT("The Distacne value is: %f"), CurrentBuilding->GetDistanceTo(this));
 				if (TeamNumber == Execute_GetTeam(CurrentBuilding))
 				{
@@ -296,7 +322,7 @@ void AJeninUnit::ServerMoveToLocationStarted_Implementation(FVector Location)
 // Called when the game starts or when spawned
 void AJeninUnit::BeginPlay()
 {
-	 Super::BeginPlay();
+	Super::BeginPlay();
 
 	USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
 	if (SkeletalMeshComponent)
@@ -329,6 +355,24 @@ void AJeninUnit::BeginPlay()
 			MyUnitActionWidgets.Add(MyUnitActionWidget);
 		}
 	}
+
+	
+	// for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
+	// {
+	// 	
+	// 	UE_LOG(LogTemp, Warning, TEXT("The this->TeamNumber value is: %d"), this->TeamNumber);
+	// 	APlayerController* PlayerController = *It;
+	// 	// GetController()
+	// 	if (AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(PlayerController))
+	// 	{
+	// 		UE_LOG(LogTemp, Warning, TEXT("The JeninPlayerController->TeamNumber value is: %d"), JeninPlayerController->TeamNumber);
+	// 		if (JeninPlayerController->TeamNumber == this->TeamNumber) 
+	// 		{
+	// 			UnitsJeninPlayerController = JeninPlayerController;
+	// 			break; 
+	// 		}
+	// 	}
+	// }
 }
 
 // Called every frame
@@ -351,8 +395,8 @@ int32 AJeninUnit::GetTeam_Implementation()
 
 void AJeninUnit::BeginDestroy()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s is being destroyed!"), *GetName());
-	UE_LOG(LogTemp, Warning, TEXT("%s is being destroyed! Owner: %s, IsPendingKill: %d"), *GetName(), *GetNameSafe(GetOwner()), IsPendingKill());
+	//UE_LOG(LogTemp, Warning, TEXT("%s is being destroyed!"), *GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("%s is being destroyed! Owner: %s, IsPendingKill: %d"), *GetName(), *GetNameSafe(GetOwner()), IsPendingKill());
    
 	// ... potentially more detailed logging here ...
 	Super::BeginDestroy(); 

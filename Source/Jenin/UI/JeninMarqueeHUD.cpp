@@ -6,6 +6,7 @@
 #include "JeninSelectedUnitArea.h"
 #include "Components/HorizontalBox.h"
 #include "Jenin/Player/JeninPlayerController.h"
+#include "Widgets/JeninMainGameUIWidget.h"
 
 AJeninMarqueeHUD::AJeninMarqueeHUD()
 {
@@ -21,8 +22,21 @@ void AJeninMarqueeHUD::BeginPlay()
 
 	if (UnitAreaWidget)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
+		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
+		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
+		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
+
 		MyUnitAreaWidget = CreateWidget<UJeninSelectedUnitArea>(GetWorld(), UnitAreaWidget);
 		MyUnitAreaWidget->AddToViewport();
+	}
+
+	if (JeninMainGameUIWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MyJeninMainGameUIWidget MADE!!!!!!!!!!!!!"));
+
+		MyJeninMainGameUIWidget = CreateWidget<UJeninMainGameUIWidget>(GetWorld(), JeninMainGameUIWidget);
+		MyJeninMainGameUIWidget->AddToViewport();
 	}
 	
 }

@@ -42,6 +42,7 @@ void AJeninPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(AJeninPlayerController, TeamNumber);
 	DOREPLIFETIME(AJeninPlayerController, TeamColor);
+	DOREPLIFETIME(AJeninPlayerController, ResourceAmount);
 }
 
 void AJeninPlayerController::SetupInputComponent()
@@ -157,6 +158,8 @@ bool AJeninPlayerController::IsOnMyTeam_Implementation(int32 teamNumber)
 	}
 }
 
+
+
 void AJeninPlayerController::ProduceUnit_Implementation(AJeninBuilding* buildingReference, TSubclassOf<AJeninUnit> UnitToProduce)
 {
 	IJenin_RTSInterface::ProduceUnit_Implementation(buildingReference, UnitToProduce);
@@ -172,6 +175,17 @@ void AJeninPlayerController::ServerProduceUnit_Implementation(AJeninBuilding* Bu
 	BuildingReference->AddUnitToQueue(UnitToProduce);
 }
 
+
+int32 AJeninPlayerController::GetResourceAmount_Implementation()
+{
+	//return IJenin_RTSInterface::GetResourceAmount_Implementation();
+	return ResourceAmount;
+}
+
+void AJeninPlayerController::IncrementResourceAmount_Implementation(int32 Amount)
+{
+	ResourceAmount += Amount;
+}
 
 void AJeninPlayerController::BeginPlay()
 {

@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystemInterface.h"
 #include "Jenin/Building/JeninBuilding.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/Core/JeninManagers/JeninGameManager.h"
 #include "Jenin/Resource/JeninResourceNode.h"
 #include "Jenin/UI/JeninEdgeScroll.h"
 
@@ -44,6 +45,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LeftShiftAction = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<AJeninGameManager> JeninGameManager;
 	
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	// TObjectPtr<UInputAction> MouseAxisAction = nullptr;
@@ -65,11 +69,16 @@ public:
 	virtual void SetupInputComponent() override;
 	virtual void ClearSelectedBuilding_Implementation() override;
 	
+	//***********************************************
+	//		REPLICATED VARIABLES FOR THE CLIENT
+	//***********************************************
+
 	UPROPERTY(Replicated)
 	int32 TeamNumber;
 	UPROPERTY(Replicated)
 	FLinearColor TeamColor;
-
+	UPROPERTY(Replicated)
+	int32 ResourceAmount;
 
 	UFUNCTION()
 	void OnLeftMouseStarted(const FInputActionValue& Value);
@@ -124,7 +133,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	bool IsOnMyTeam(int32 a); virtual bool IsOnMyTeam_Implementation(int32 teamNumber) override;
 
-	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	int32 GetResourceAmount(); virtual int32 GetResourceAmount_Implementation() override;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void IncrementResourceAmount(int32 Amount); virtual void IncrementResourceAmount_Implementation(int32 Amount) override;
 	
 protected:
 	virtual void BeginPlay() override;

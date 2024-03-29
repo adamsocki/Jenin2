@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "JeninCameraPawn.generated.h"
@@ -17,6 +18,10 @@ public:
 	// Sets default values for this pawn's properties
 	AJeninCameraPawn();
 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UBoxComponent> CameraBoxComponent = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> Camera = nullptr;
 

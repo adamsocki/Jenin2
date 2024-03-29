@@ -7,6 +7,7 @@
 #include "GameFramework/HUD.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
 #include "Jenin/Unit/JeninUnit.h"
+#include "Widgets/JeninMainGameUIWidget.h"
 #include "JeninMarqueeHUD.generated.h"
 
 /**
@@ -40,9 +41,13 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UJeninSelectedUnitArea> UnitAreaWidget;
-
 	UPROPERTY()
 	UJeninSelectedUnitArea* MyUnitAreaWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UJeninMainGameUIWidget> JeninMainGameUIWidget;
+	UPROPERTY()
+	UJeninMainGameUIWidget* MyJeninMainGameUIWidget;
+	
 	
 	UPROPERTY()
 	TSet<TSubclassOf<UJeninUnitActionWidget>> JeninUnitActionWidgetClasses;

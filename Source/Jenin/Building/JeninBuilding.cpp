@@ -190,7 +190,6 @@ void AJeninBuilding::Tick(float DeltaTime)
 	//
 	// }
 		*/
-	
 }
 
 int32 AJeninBuilding::GetTeam_Implementation()
@@ -202,7 +201,6 @@ void AJeninBuilding::AddUnitToQueue(TSubclassOf<AJeninUnit> NewUnit)
 {
 	UnitProductionQueue.Add(NewUnit);
 	UE_LOG(LogTemp, Warning, TEXT("AddUnitToQueue"));
-
 }
 
 void AJeninBuilding::ProcessProductionQueue()

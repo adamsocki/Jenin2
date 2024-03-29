@@ -70,5 +70,12 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void ProduceUnit(AJeninBuilding *BuildingReference, TSubclassOf<AJeninUnit> UnitToProduce);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	int32 GetResourceAmount();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void IncrementResourceAmount(int32 Amount);
+
 	
 };

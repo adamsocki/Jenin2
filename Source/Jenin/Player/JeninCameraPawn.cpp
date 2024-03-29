@@ -4,6 +4,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "JeninPlayerController.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AJeninCameraPawn::AJeninCameraPawn()
@@ -11,8 +12,11 @@ AJeninCameraPawn::AJeninCameraPawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CameraBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CameraBoxComponent"));
+	CameraBoxComponent->SetupAttachment(RootComponent);
+
 	this->SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	this->SpringArm->SetupAttachment(RootComponent);
+	this->SpringArm->SetupAttachment(CameraBoxComponent);
 
 	SpringArm->TargetArmLength = 0.0f;
 	SpringArm->bEnableCameraLag = true;
@@ -25,18 +29,13 @@ AJeninCameraPawn::AJeninCameraPawn()
 
 	IsOverBottomEdge = false;
 	SpringArm->bEnableCameraLag = true;
-	Target_TargetArmLength = 100.0f;
 }
 
 // Called when the game starts or when spawned
 void AJeninCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
-
-
 
 // Called every frame
 void AJeninCameraPawn::Tick(float DeltaTime)
@@ -45,6 +44,50 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 	// CAMERA MOVEMENT AT EDGE OF VIEWPORT
 	if(AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(Controller))
 	{
+		float TraceDistance = 8000.0f;
+		
+		FHitResult HitResult;
+		FVector StartLocation = CameraBoxComponent->GetComponentLocation();
+		FVector EndLocation = StartLocation + FVector::DownVector * TraceDistance; // TraceDistance is how far down you want to trace
+		//
+		FCollisionQueryParams CP = {};
+		 TArray<AActor*> ActorsToIgnore ={};
+		//
+		bool bTraceHit = ActorLineTraceSingle(HitResult, StartLocation, EndLocation, ECC_WorldStatic, CP);
+		if (bTraceHit)
+		{
+//			HitResult.Distance;=
+		}
+
+		// bool bTraceHit = UKismetSystemLibrary::LineTraceSingle(
+		// 	GetWorld(), 
+		// 	StartLocation, 
+		// 	EndLocation, 
+		// 	ETraceTypeQuery::TraceTypeQuery1, // Adjust the trace channel as needed
+		// 	false,  // Whether to ignore simple collisions
+		// 	ActorsToIgnore, // Array of actors to ignore in the trace
+		// 	EDrawDebugTrace::ForDuration, // Use this to visualize the trace
+		// 	HitResult, 
+		// 	true, 
+		// 	FLinearColor::Red, 
+		// 	FLinearColor::Green, 
+		// 	5.0f // Line trace thickness
+		// );
+
+		// float DesiredHeightOffset = 1000.0f;
+		// float InterpSpeed = 5.0f; // Adjust this for desired camera movement smoothness
+		//
+		// if (bTraceHit)
+		// {
+		// 	float DistanceToGround = (StartLocation - HitResult.Location).Z;
+		// 	// Use DistanceToGround to adjust the camera's Z position
+		// 	FVector TargetCameraLocation = CameraBoxComponent->GetComponentLocation();
+		// 	TargetCameraLocation.Z = StartLocation.Z - DistanceToGround + DesiredHeightOffset; // DesiredHeightOffset is a constant you'd set for your preferred camera height.
+		// 	FVector NewCameraLocation = FMath::VInterpTo(CameraBoxComponent->GetComponentLocation(), TargetCameraLocation, GetWorld()->DeltaTimeSeconds, InterpSpeed);
+		// 	CameraBoxComponent->SetWorldLocation(TargetCameraLocation);
+		// }
+
+		
 		FVector MousePosition = {};
 		int32 ViewportSizeX = {};
 		int32 ViewportSizeY = {};
@@ -58,11 +101,8 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 		if (JeninPlayerController->LeftShiftButtonDown)
 		{
 			ScrollSpeedToApply *= 4;
-			
 		}
 		
-			
-
 		if (IsOverTopEdge)
 		{
 			FVector DeltaLocation = {};
