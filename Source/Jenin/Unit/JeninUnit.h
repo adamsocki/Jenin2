@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actions/JeninUnitAction.h"
 #include "GameFramework/Character.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
 #include "Jenin/Player/JeninPlayerController.h"
 #include "Jenin/Resource/JeninResourceInterface.h"
-#include "Jenin/UI/JeninUnitActionWidget.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
 #include "JeninUnit.generated.h"
+
 
 UCLASS()
 class JENIN_API AJeninUnit : public ACharacter, public IJenin_RTSInterface, public IJeninResourceInterface
@@ -59,8 +60,7 @@ public:
 
 	UPROPERTY()
 	AJeninPlayerController *UnitsJeninPlayerController;
-
-	// Called to bind functionality to input
+ 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
@@ -69,9 +69,11 @@ public:
 	UPROPERTY()
 	UJenin_SelectedUnitWidget *MyUnitWidget;
 
-	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<UJeninUnitActionWidget>>UnitActions;
- 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyCategory")
+	TArray<TSubclassOf<UJeninUnitAction>> UnitActions;
+	
+	UPROPERTY()
+	TArray<UJeninUnitAction*> MyUnitActions;
 	UPROPERTY()
 	TArray<UJeninUnitActionWidget*> MyUnitActionWidgets;
 	

@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Jenin/Player/JeninPlayerStart.h"
-#include "Jenin/UI/JeninUnitActionWidget.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
+#include "Jenin/Unit/Actions/JeninUnitActionWidget.h"
 #include "UObject/Interface.h"
 #include "Jenin_RTSInterface.generated.h"
 
@@ -77,5 +77,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void IncrementResourceAmount(int32 Amount);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void RemoveUnitActionWidget(UJeninUnitActionWidget* DeselectedUnitActionWidget);
 	
 };

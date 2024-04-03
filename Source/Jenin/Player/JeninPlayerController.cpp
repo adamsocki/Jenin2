@@ -77,33 +77,35 @@ void AJeninPlayerController::ClearSelectedBuilding_Implementation()
 		SelectedBuilding->DeselectThis_Implementation();
 		SelectedBuilding = nullptr;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("This shouldng happen yet"));
+	//UE_LOG(LogTemp, Warning, TEXT("This shouldng happen yet"));
 }
 
 void AJeninPlayerController::ServerMoveToLocationStarted_Implementation(AJeninUnit* Unit, FVector Location)
 {
 	//Unit->UnitMoveCommand_Implementation(Location);
-	if (AAIController *UnitAIController = Unit->GetController<AAIController>())
+	if (Unit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UnitMov AIController Unit."));
-		//UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand_Implementation called. Location: %s"), *Location.ToString());
-		if (HasAuthority()) // or Role == ROLE_Authority
+		if (AAIController *UnitAIController = Unit->GetController<AAIController>())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on SERVER for %s"), *GetName());
+			UE_LOG(LogTemp, Warning, TEXT("UnitMov AIController Unit."));
+			//UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand_Implementation called. Location: %s"), *Location.ToString());
+			if (HasAuthority()) // or Role == ROLE_Authority
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on SERVER for %s"), *GetName());
+			}
+			else 
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on CLIENT for %s"), *GetName());
+			}
+			UnitAIController->StopMovement();
+			UnitAIController->MoveToLocation(Location);
 		}
-		else 
+		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on CLIENT for %s"), *GetName());
+			UE_LOG(LogTemp, Warning, TEXT("No AI CONTROLLER FOR UNIT."));
 		}
-		UnitAIController->StopMovement();
-		UnitAIController->MoveToLocation(Location);
+		UE_LOG(LogTemp, Warning, TEXT("ServerUpdate for move."));
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No AI CONTROLLER FOR UNIT."));
-
-	}
-	UE_LOG(LogTemp, Warning, TEXT("ServerUpdate for move."));
 }
 
 

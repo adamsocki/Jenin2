@@ -6,6 +6,7 @@
 
 #include "AIController.h"
 #include "EngineUtils.h"
+#include "Actions/JeninUnitActionWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/Image.h"
@@ -13,6 +14,7 @@
 #include "Jenin/UI/JeninMarqueeHUD.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
 #include "Kismet/GameplayStatics.h"
+
 
 
 // Sets default values
@@ -66,22 +68,21 @@ void AJeninUnit::SelectThis_Implementation()
 	AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	if (MarqueeHUD && MyUnitWidget)
 	{
-		if (Cast<IJenin_RTSInterface>(MarqueeHUD))
+		if (MyUnitWidget)
 		{
-			Execute_AddUnitToSelectedUnitsArea(MarqueeHUD, MyUnitWidget);
-			UE_LOG(LogTemp, Warning, TEXT("Execute_AddUnitToSelectedUnitsArea"));
-			// for (int i = 0; i < UnitActions.Num(); i++)
-			// {
-			// 	Execute_AddUnitActionsToSelectedUnitActionsArea(MarqueeHUD, UnitActions[i]);
-			// }
-
-			for (int i = 0; i < MyUnitActionWidgets.Num(); i++)
+			if (Cast<IJenin_RTSInterface>(MarqueeHUD))
 			{
-				Execute_AddUnitActionsToSelectedUnitActionsArea(MarqueeHUD, MyUnitActionWidgets[i]);
+				Execute_AddUnitToSelectedUnitsArea(MarqueeHUD, MyUnitWidget);
 			}
 		}
-		
-		// MarqueeHUD->AddUnitToSelectedUnitsArea_Implementation(MyUnitWidget);
+	
+		for (int i = 0; i < MyUnitActionWidgets.Num(); i++)
+		{
+			if (UJeninUnitActionWidget* JeninUnitActionWidget = Cast<UJeninUnitActionWidget>(MyUnitActionWidgets[i]))
+			{
+				Execute_AddUnitActionsToSelectedUnitActionsArea(MarqueeHUD, JeninUnitActionWidget);
+			}
+		}
 	}
 }
 
@@ -97,9 +98,19 @@ void AJeninUnit::DeselectThis_Implementation()
 	
 	for (int i = 0; i < MyUnitActionWidgets.Num(); i++)
 	{
+		if (MyUnitActionWidgets[i])
+		{
+			if (AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+			{
+				if (Cast<IJenin_RTSInterface>(MarqueeHUD))
+				{
+					Execute_RemoveUnitActionWidget(MarqueeHUD, MyUnitActionWidgets[i]);
+				}
+			}
+		}
+		
 		MyUnitActionWidgets[i]->RemoveFromParent();
 	}
-	
 }
 
 void AJeninUnit::UnitMoveCommand_Implementation(FVector Location)
@@ -123,7 +134,6 @@ void AJeninUnit::UnitMoveCommand_Implementation(FVector Location)
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No AI CONTROLLER FOR UNIT."));
-
 	}
 }
 
@@ -137,7 +147,6 @@ void AJeninUnit::UnhighlightUnit_Implementation()
 {
 	IJenin_RTSInterface::UnhighlightUnit_Implementation();
 	SelectionDecal->SetDecalMaterial(SelectionDecalMaterial);
-
 }
 
 void AJeninUnit::Collect_Implementation()
@@ -149,8 +158,6 @@ void AJeninUnit::Collect_Implementation()
 		if (HasResource) // Already has resource, go to dropoff
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Has Resource TRUE"));
-			
-			
 			Execute_UnitMoveCommand(this, DropOffBuilding->GetActorLocation());
 		}
 		else
@@ -167,11 +174,8 @@ void AJeninUnit::Collect_Implementation()
 			{
 				
 			}
-			
-
 		}
 	}
-	
 }
 
 void AJeninUnit::DropOff_Implementation()
@@ -181,7 +185,6 @@ void AJeninUnit::DropOff_Implementation()
 	{
 		if(HasResource)
 		{
-			
 			if (AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(UGameplayStatics::GetPlayerController(this, TeamNumber)))
 			{
 				if (IJenin_RTSInterface* JeninInterface = Cast<IJenin_RTSInterface>(JeninPlayerController))
@@ -190,38 +193,18 @@ void AJeninUnit::DropOff_Implementation()
 					UE_LOG(LogTemp, Warning, TEXT("Execute_IncrementResourceAmount"));
 				}
 			}
-
-			
-			// UE_LOG(LogTemp, Warning, TEXT("The AJeninPlayerController Team number value is: %d"), JeninPlayerController->TeamNumber);//
-
-			// UWorld* MyWorld = GetWorld();
-			// if (MyWorld)
-			// {
-			// 	FConstPlayerControllerIterator iterator = MyWorld->GetPlayerControllerIterator();
-			// 	for (int i = 0; i < iterator->; i++)
-			// 	{
-			// 		
-			// 	}
-			// }
-			
 			else
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Unit DOES NOT HAVE A PLAYER CONTROLLER ASSIGNED"));
 			}
-			
 			HasResource = false;
 			Execute_UnitMoveCommand(this, ResourceNodeWorkingFrom->GetActorLocation());
-			
-
 		}
 		else
 		{
 			Execute_UnitMoveCommand(this, ResourceNodeWorkingFrom->GetActorLocation());
 		}
-		
 	}
-	
-	
 }
 
 void AJeninUnit::SetIsWorkingOnResource_Implementation(AJeninResourceNode* ResourceNode)
@@ -347,13 +330,65 @@ void AJeninUnit::BeginPlay()
 	 	}
 	 }
 	
+	// for (int i = 0; i < UnitActions.Num(); i++)
+	// {
+	// 	UJeninUnitActionWidget* MyUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(GetWorld(), UnitActions[i]);
+	// 	if (MyUnitActionWidget)
+	// 	{
+	// 		MyUnitActionWidgets.Add(MyUnitActionWidget);
+	// 	}
+	// }
+
 	for (int i = 0; i < UnitActions.Num(); i++)
 	{
-		UJeninUnitActionWidget* MyUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(GetWorld(), UnitActions[i]);
-		if (MyUnitActionWidget)
+		if (UnitActions[i] != nullptr)
 		{
-			MyUnitActionWidgets.Add(MyUnitActionWidget);
+			// Instantiate the object using the class from the array
+			UJeninUnitAction* NewJeninUnitActionInstance = NewObject<UJeninUnitAction>(this, UnitActions[i]);
+			if (NewJeninUnitActionInstance != nullptr)
+			{
+				// Add the new instance to the InstantiatedObjects array
+				MyUnitActions.Add(NewJeninUnitActionInstance);
+				if (UWorld* GameWorld = GetWorld())
+				{
+					if (UJeninUnitActionWidget* NewUnitActionWidgetInstance = CreateWidget<UJeninUnitActionWidget>(GameWorld, NewJeninUnitActionInstance->UnitActionWidget))
+					{
+						MyUnitActionWidgets.Add(NewUnitActionWidgetInstance);
+						UE_LOG(LogTemp, Warning, TEXT("NewUnitActionWidgetInstancd"));
+
+					}
+				}
+				
+			
+				// Optionally, call any initialization or setup functions on your new object
+				//NewObjInstance->DoSomething();
+			}
 		}
+		//UJeninUnitAction* JeninUnitAction = NewObject<UJeninUnitAction>(this,)
+		// UObject* ArrayElement = UnitActions[i];
+		// UClass* ElementClass = ArrayElement->GetClass();
+		// UE_LOG(LogTemp, Warning, TEXT("ElementClass is: %s"), *ElementClass->GetName());
+
+		// if (UnitActions[i] != nullptr)
+		// {
+		// 	UE_LOG(LogTemp, Warning, TEXT("Object Info: %s"), *UnitActions[i]->GetFullName());
+		// }
+		// else
+		// {
+		// 	UE_LOG(LogTemp, Warning, TEXT("UnitActionArray[i] is nullptr"));
+		// }
+		// if (TSoftObjectPtr<UJeninUnitAction> SoftPtr = UnitActions[i])
+		// {
+		// 	UE_LOG(LogTemp, Warning, TEXT("UnitActions.Num()"));
+		// 	UE_LOG(LogTemp, Warning, TEXT("UnitActions.Num()"));
+		// 	UE_LOG(LogTemp, Warning, TEXT("UnitActions.Num()"));
+		// 	UE_LOG(LogTemp, Warning, TEXT("UnitActions.Num()"));
+		//
+		// 	if (UJeninUnitActionWidget* MyUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(GetWorld(), SoftPtr->UnitActionWidget))
+		// 	{
+		// 		MyUnitActionWidgets.Add(MyUnitActionWidget);
+		// 	}
+		// }
 	}
 
 	
@@ -366,7 +401,7 @@ void AJeninUnit::BeginPlay()
 	// 	if (AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(PlayerController))
 	// 	{
 	// 		UE_LOG(LogTemp, Warning, TEXT("The JeninPlayerController->TeamNumber value is: %d"), JeninPlayerController->TeamNumber);
-	// 		if (JeninPlayerController->TeamNumber == this->TeamNumber) 
+     	// 		if (JeninPlayerController->TeamNumber == this->TeamNumber) 
 	// 		{
 	// 			UnitsJeninPlayerController = JeninPlayerController;
 	// 			break; 

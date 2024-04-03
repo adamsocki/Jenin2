@@ -7,6 +7,11 @@ FReply UJeninUnitActionWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 {
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
+
+		
+
+
+		
 		return FReply::Handled();
 	}
 	else
@@ -18,11 +23,14 @@ FReply UJeninUnitActionWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 void UJeninUnitActionWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseEnter"));
+
 	
 }
 
 void UJeninUnitActionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
-	
+	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseLeave"));
+
 }

@@ -22,23 +22,15 @@ void AJeninMarqueeHUD::BeginPlay()
 
 	if (UnitAreaWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
-		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
-		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
-		UE_LOG(LogTemp, Warning, TEXT("UnitAreaWidget MADE!!!!!!!!!!!!!"));
-
 		MyUnitAreaWidget = CreateWidget<UJeninSelectedUnitArea>(GetWorld(), UnitAreaWidget);
 		MyUnitAreaWidget->AddToViewport();
 	}
 
 	if (JeninMainGameUIWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("MyJeninMainGameUIWidget MADE!!!!!!!!!!!!!"));
-
 		MyJeninMainGameUIWidget = CreateWidget<UJeninMainGameUIWidget>(GetWorld(), JeninMainGameUIWidget);
 		MyJeninMainGameUIWidget->AddToViewport();
 	}
-	
 }
 
 void AJeninMarqueeHUD::MarqueePressed_Implementation()
@@ -60,7 +52,11 @@ void AJeninMarqueeHUD::MarqueeHeld_Implementation()
 	IJenin_RTSInterface::MarqueeHeld_Implementation();
 	if (GetOwningPlayerController())
 	{
-		GetOwningPlayerController()->GetMousePosition(CurrentMousePosition.X, CurrentMousePosition.Y);
+		if (&CurrentMousePosition != nullptr)
+		{
+			GetOwningPlayerController()->GetMousePosition(CurrentMousePosition.X, CurrentMousePosition.Y);
+
+		}
 	}
 }
 
@@ -88,23 +84,54 @@ void AJeninMarqueeHUD::AddUnitToSelectedUnitsArea_Implementation(UJenin_Selected
 void AJeninMarqueeHUD::AddUnitActionsToSelectedUnitActionsArea_Implementation(
 	UJeninUnitActionWidget* SelectedUnitActionWidget)
 {
-	 IJenin_RTSInterface::AddUnitActionsToSelectedUnitActionsArea_Implementation(SelectedUnitActionWidget);
+	IJenin_RTSInterface::AddUnitActionsToSelectedUnitActionsArea_Implementation(SelectedUnitActionWidget);
 
-
-	if (MyUnitAreaWidget)
+	FString &ActionID = SelectedUnitActionWidget->ActionID;
+	for (const auto& Pair : JeninActionWidgetCounts)
 	{
-		MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
+		UE_LOG(LogTemp, Warning, TEXT("Key: %s, Value: %d"), *Pair.Key, Pair.Value);
 	}
-	
-	 // if (!JeninUnitActionWidgetClasses.Contains(SelectedUnitActionWidgetClass))
-	 // {
-	 // 	JeninUnitActionWidgetClasses.Add(SelectedUnitActionWidgetClass);
-	 // 	UJeninUnitActionWidget *UnitActionWidget = NewObject<UJeninUnitActionWidget>(this, SelectedUnitActionWidgetClass);
-	 // 	MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(UnitActionWidget);
-	 // 	JeninUnitActionWidgets.Add(UnitActionWidget);
-	 // }
-}
 
+	if (JeninActionWidgetCounts.Contains(ActionID))
+	{
+		if (!JeninUnitActionWidgets.Contains(SelectedUnitActionWidget))
+		{
+			JeninUnitActionWidgets.Add(SelectedUnitActionWidget);
+			JeninActionWidgetCounts[ActionID] += 1;
+		}
+	}
+	else
+	{
+		JeninActionWidgetCounts.Add(ActionID, 1);
+		JeninUnitActionWidgets.Add(SelectedUnitActionWidget);
+		if (MyUnitAreaWidget)
+		{
+			MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
+			UE_LOG(LogTemp, Warning, TEXT("if (MyUnitAreaWidget)"));
+
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[ActionID] is: %d"), JeninActionWidgetCounts[ActionID]);
+	UE_LOG(LogTemp, Warning, TEXT("JeninUnitActionWidgets.Num() is: %d"), JeninUnitActionWidgets.Num());
+	/*// if (JeninActionWidgetCounts1.Contains(ActionID))
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("The ActionID name is %s"), *ActionID);
+	// 	 JeninActionWidgetCounts[ActionID] += 1;
+	// 	UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[ActionID] is: %d"), JeninActionWidgetCounts[ActionID]);
+	// 	//for (int i = 0; i < )
+	// }
+	// else
+	// {
+	// 	//TPair<UJeninUnitActionWidget*, int32> tPair = New<TPair<UJeninUnitActionWidget*, int32>>(SelectedUnitActionWidget, 1);
+	// 	JeninActionWidgetCounts.Add(ActionID, 1);
+	// 	UE_LOG(LogTemp, Warning, TEXT("Not Contains(ActionID)"));
+	// 	//JeninUnitActionReference.Add(SelectedUnitActionWidget,);
+	// 	if (MyUnitAreaWidget)
+	// 	{
+	// 		MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
+	// 	}
+	// }*/
+}
 void AJeninMarqueeHUD::ClearSelectedUnits_Implementation()
 {
 	IJenin_RTSInterface::ClearSelectedUnits_Implementation();
@@ -114,11 +141,7 @@ void AJeninMarqueeHUD::ClearSelectedUnits_Implementation()
 		// @TODO NEED TO RERUN UNIT ACTION CHECK?
 	}
 	UnitsSelected.Empty();
-
-	
-	
 }
-
 void AJeninMarqueeHUD::SelectSingleUnit_Implementation(AActor* Unit)
 {
 	if (AJeninUnit* JeninUnit = Cast<AJeninUnit>(Unit))
@@ -127,6 +150,55 @@ void AJeninMarqueeHUD::SelectSingleUnit_Implementation(AActor* Unit)
 		UnitsSelected.AddUnique(JeninUnit);
 	}
 	IJenin_RTSInterface::SelectSingleUnit_Implementation(Unit);
+}
+void AJeninMarqueeHUD::RemoveUnitActionWidget_Implementation(UJeninUnitActionWidget* DeselectedUnitActionWidget)
+{
+	IJenin_RTSInterface::RemoveUnitActionWidget_Implementation(DeselectedUnitActionWidget);
+	if (DeselectedUnitActionWidget)
+	{
+		JeninUnitActionWidgets.Remove(DeselectedUnitActionWidget);
+		FString &ActionID = DeselectedUnitActionWidget->ActionID;
+		JeninActionWidgetCounts[ActionID] -= 1;
+		if (JeninActionWidgetCounts[ActionID] <= 0)
+		{
+			JeninActionWidgetCounts.Remove(ActionID);
+		}
+		UE_LOG(LogTemp, Warning, TEXT("RemoveUnitActionWidget_Implementation"));
+		// UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[UnitActionWidget->ActionID] -= is: %d"), JeninActionWidgetCounts[UnitActionWidget->ActionID]);
+		// if (JeninActionWidgetCounts[ActionID] >= 1)
+		// {
+		// 	// JeninActionWidgetCounts
+		// //	JeninActionWidgetCounts.Remove(ActionID);
+		// 	// DeselectedUnitActionWidget->RemoveFromParent();
+		// 	//JeninUnitActionWidgets.Remove(DeselectedUnitActionWidget);
+		// }
+		// if (JeninActionWidgetCounts[ActionID] > 1)
+		// {
+		// 	JeninActionWidgetCounts[ActionID] -= 1;
+		// }
+
+		//JeninUnitActionWidgets.Remove(DeselectedUnitActionWidget);
+	}
+	
+	
+
+	
+	// Check if the action ID exists in the count map
+	// if (JeninActionWidgetCounts.Contains(UnitActionWidget->ActionID))
+	// {
+	// 	// Decrement the count for this action ID
+	// 	JeninActionWidgetCounts[UnitActionWidget->ActionID] -= 1;
+	// 	UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[UnitActionWidget->ActionID] -= is: %d"), JeninActionWidgetCounts[UnitActionWidget->ActionID]);
+	//
+	//
+	// 	if (JeninActionWidgetCounts[UnitActionWidget->ActionID] == 0)
+	// 	{
+	// 		UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[UnitActionWidget->ActionID] == 0"));
+	//
+	// 		JeninActionWidgetCounts.Remove(UnitActionWidget->ActionID);
+	// 		UnitActionWidget->RemoveFromParent();
+	// 	}
+	// }
 }
 
 
@@ -143,13 +215,12 @@ void AJeninMarqueeHUD::DrawHUD()
 		
 		TArray<AJeninUnit*> UnitsUnderRectangle;
 		GetActorsInSelectionRectangle(StartingMousePosition, CurrentMousePosition, UnitsUnderRectangle, false, false);
-
 		
 		// GET THE ACTORS
 		for (int i = 0; i < UnitsUnderRectangle.Num(); i++)
 		{
 			int32 UnitTeam = UnitsUnderRectangle[i]->GetTeam_Implementation();
-			UE_LOG(LogTemp, Warning, TEXT("The integer value is: %d"), UnitTeam);
+			//UE_LOG(LogTemp, Warning, TEXT("The integer value is: %d"), UnitTeam);
 			if (AJeninPlayerController *JeninPlayerController = Cast<AJeninPlayerController>(GetOwningPlayerController()))
 			{
 				if (Cast<IJenin_RTSInterface>(JeninPlayerController))
@@ -160,16 +231,16 @@ void AJeninMarqueeHUD::DrawHUD()
 						{
 							Execute_SelectThis(UnitsUnderRectangle[i]);
 							UnitsSelected.AddUnique(UnitsUnderRectangle[i]);
+							//JeninUnitActionWidgets.AddUnique(UnitsUnderRectangle)
 							Execute_ClearSelectedBuilding(JeninPlayerController);
 							UE_LOG(LogTemp, Warning, TEXT("Execute_SelectThis"));
-							UE_LOG(LogTemp, Warning, TEXT("The Size of selected array value is: %d"), UnitsUnderRectangle[i]->UnitActions.Num());
+						//	UE_LOG(LogTemp, Warning, TEXT("The Size of selected array value is: %d"), UnitsUnderRectangle[i]->UnitActions.Num());
 						}
 					}
 				}
 			}			
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("The Selected value is: %d"), UnitsSelected.Num());
-
+		
 		for (int i = 0; i < UnitsSelected.Num(); i++)
 		{
 			if (UnitsUnderRectangle.Find(UnitsSelected[i]) == INDEX_NONE)
@@ -177,7 +248,13 @@ void AJeninMarqueeHUD::DrawHUD()
 				if (Cast<IJenin_RTSInterface>(UnitsSelected[i]))
 				{
 					Execute_DeselectThis(UnitsSelected[i]);
+					//for (int j = 0; j < UnitsSelected[i]->UnitActions.Num(); j++)
+					//{
+					//	Execute_RemoveUnitActionWidget(this, UnitsSelected[i]->UnitActions[j]);
+
+					//}
 					UnitsSelected.RemoveAt(i);
+					//action
 				}
 			}
 		}

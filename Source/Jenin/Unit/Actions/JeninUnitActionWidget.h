@@ -22,5 +22,7 @@ class JENIN_API UJeninUnitActionWidget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UImage* UnitActionImage;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	FString ActionID;
 };

@@ -13,6 +13,8 @@
 /**
  * 
  */
+
+
 UCLASS()
 class JENIN_API AJeninMarqueeHUD : public AHUD, public IJenin_RTSInterface
 {
@@ -38,6 +40,9 @@ public:
 	void ClearSelectedUnits(); virtual void ClearSelectedUnits_Implementation() override;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void SelectSingleUnit(AActor* Unit); virtual void SelectSingleUnit_Implementation(AActor* Unit) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void RemoveUnitActionWidget(UJeninUnitActionWidget* DeselectedUnitActionWidget); virtual void RemoveUnitActionWidget_Implementation(UJeninUnitActionWidget* DeselectedUnitActionWidget) override;
+	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UJeninSelectedUnitArea> UnitAreaWidget;
@@ -66,5 +71,13 @@ public:
 
 	UPROPERTY()
 	TArray<AJeninUnit*> UnitsSelected;
+
+	TMap<FString, TPair<UTexture2D*, int32>> ActionCounts;
+
+	//UPROPERTY()
+	TMap<FString, int32> JeninActionWidgetCounts;
+	TMap<FString, TPair<UJeninUnitActionWidget*, int32>> JeninActionWidgetCounts1;
+	//TMap<FString, UJeninUnitActionWidget> JeninUnitActionReference;
+	TMap<FString, TArray<UJeninUnitActionWidget*>> JeninActionWidgetArrays333;
 	
 };
