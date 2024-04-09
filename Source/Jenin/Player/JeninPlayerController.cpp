@@ -244,11 +244,8 @@ void AJeninPlayerController::Tick(float DeltaSeconds)
 								IJenin_RTSInterface::Execute_SelectThis(SelectedBuilding);
 							}
 							UE_LOG(LogTemp, Warning, TEXT("SelectThisSholundwixk"));
-							
 						}
-						
 					}
-					
 				}
 			}
 			AJeninMarqueeHUD* MarqueeHUD = Cast<AJeninMarqueeHUD>(GetHUD());

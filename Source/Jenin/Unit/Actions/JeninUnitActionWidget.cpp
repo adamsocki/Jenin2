@@ -9,8 +9,13 @@ FReply UJeninUnitActionWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 	{
 
 		
-
-
+		// if (ProductionButton)
+		// {
+		// 	//ProductionButton->OnClicked.AddDynamic(this, &UJeninProduceUnitWidget::OnProductionButtonClicked);
+		// 	//ProductionButton->OnClicked
+		// 	ProductionButton->OnClicked.AddUniqueDynamic(this, &UJeninProduceUnitWidget::OnProductionButtonClicked);
+		//
+		// }
 		
 		return FReply::Handled();
 	}
@@ -24,7 +29,7 @@ void UJeninUnitActionWidget::NativeOnMouseEnter(const FGeometry& InGeometry, con
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseEnter"));
-
+	
 	
 }
 
@@ -34,3 +39,4 @@ void UJeninUnitActionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEven
 	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseLeave"));
 
 }
+

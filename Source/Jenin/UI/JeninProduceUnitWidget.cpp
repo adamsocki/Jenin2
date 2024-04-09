@@ -16,7 +16,6 @@ void UJeninProduceUnitWidget::NativeConstruct()
 //ProductionButton->OnClicked
 		ProductionButton->OnClicked.AddUniqueDynamic(this, &UJeninProduceUnitWidget::OnProductionButtonClicked);
 
-
 	}
 	bIsUnitProductionInProgress = false;
 }
@@ -36,12 +35,10 @@ void UJeninProduceUnitWidget::OnProductionButtonClicked()
 				IJenin_RTSInterface::Execute_ProduceUnit(JeninPlayerController, BuildingReference, UnitToProduce);
 				UE_LOG(LogTemp, Warning, TEXT("This should only hit once"));
 				UE_LOG(LogTemp, Warning, TEXT("This should only hit once - Instance: %p"), this);
-
 			}
 			//JeninPlayerController->ProduceUnit(BuildingReference, UnitToProduce);
 		}
 	}
 
 	bIsUnitProductionInProgress = false; 
-
 }

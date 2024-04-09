@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/Unit/Actions/JeninUnitAction.h"
 #include "JeninMainGameUIWidget.generated.h"
 
 /**
@@ -19,11 +20,34 @@ class JENIN_API UJeninMainGameUIWidget : public UUserWidget, public IJenin_RTSIn
 	virtual bool Initialize() override;
 
 public:
+
+
+	UFUNCTION()
+	void InitMainGameUIWidget();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	class UTextBlock* ResourceCountText;
 
 	UFUNCTION()
 	FText SetResourceCountField();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	class UTileView* ActionTiles001;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<TSubclassOf<UJeninUnitAction>> UnitActions;
+
+	UPROPERTY()
+	TArray<UJeninUnitAction*> MyUnitActions_Test;
+	
+	
+	UPROPERTY()
+	TArray<UJeninUnitActionWidget*> MyUnitActionWidgets;
+
+	UFUNCTION()
+	void UpdateActionTiles();
+
+	
 	
 };

@@ -113,8 +113,8 @@ void AJeninBuilding::BeginPlay()
 				NewWidget->BuildingReference = this;
 				NewWidget->UnitToProduce = SpawnableUnits[i];
 				NewWidget->SetVisibility(ESlateVisibility::Visible); 
-				UE_LOG(LogTemp, Warning, TEXT("The SpawnableUnits.Num value is: %d"), SpawnableUnits.Num());
-				UE_LOG(LogTemp, Warning, TEXT("The integer count is: %d"), i);
+				//UE_LOG(LogTemp, Warning, TEXT("The SpawnableUnits.Num value is: %d"), SpawnableUnits.Num());
+				//UE_LOG(LogTemp, Warning, TEXT("The integer count is: %d"), i);
 			}
 			//MyUnitWidget->BuildingReference = this;
 			

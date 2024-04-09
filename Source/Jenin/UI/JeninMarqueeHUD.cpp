@@ -25,12 +25,6 @@ void AJeninMarqueeHUD::BeginPlay()
 		MyUnitAreaWidget = CreateWidget<UJeninSelectedUnitArea>(GetWorld(), UnitAreaWidget);
 		MyUnitAreaWidget->AddToViewport();
 	}
-
-	if (JeninMainGameUIWidget)
-	{
-		MyJeninMainGameUIWidget = CreateWidget<UJeninMainGameUIWidget>(GetWorld(), JeninMainGameUIWidget);
-		MyJeninMainGameUIWidget->AddToViewport();
-	}
 }
 
 void AJeninMarqueeHUD::MarqueePressed_Implementation()
