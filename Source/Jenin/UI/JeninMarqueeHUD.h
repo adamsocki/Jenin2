@@ -6,6 +6,7 @@
 #include "JeninSelectedUnitArea.h"
 #include "GameFramework/HUD.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/Core/JeninManagers/JeninUIManager.h"
 #include "Jenin/Unit/JeninUnit.h"
 #include "Widgets/JeninMainGameUIWidget.h"
 #include "JeninMarqueeHUD.generated.h"
@@ -23,6 +24,12 @@ class JENIN_API AJeninMarqueeHUD : public AHUD, public IJenin_RTSInterface
 	AJeninMarqueeHUD();
 
 public:
+
+	// *************** // 
+	//     MANAGERS	   //
+	// *************** //
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Managers")
+	TSoftObjectPtr <AJeninUIManager> JeninUIManager;
 
 	virtual void BeginPlay() override;
 
@@ -42,6 +49,8 @@ public:
 	void SelectSingleUnit(AActor* Unit); virtual void SelectSingleUnit_Implementation(AActor* Unit) override;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void RemoveUnitActionWidget(UJeninUnitActionWidget* DeselectedUnitActionWidget); virtual void RemoveUnitActionWidget_Implementation(UJeninUnitActionWidget* DeselectedUnitActionWidget) override;
+
+
 	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
@@ -52,7 +61,11 @@ public:
 	TSubclassOf<UJeninMainGameUIWidget> JeninMainGameUIWidget;
 	UPROPERTY()
 	UJeninMainGameUIWidget* MyJeninMainGameUIWidget;
+
+
 	
+	// UPROPERTY()
+	// UJeninSelectedUnitArea* MyUnitAreaWidget;
 	
 	UPROPERTY()
 	TSet<TSubclassOf<UJeninUnitActionWidget>> JeninUnitActionWidgetClasses;

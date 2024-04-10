@@ -20,11 +20,16 @@ void AJeninMarqueeHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UnitAreaWidget)
-	{
-		MyUnitAreaWidget = CreateWidget<UJeninSelectedUnitArea>(GetWorld(), UnitAreaWidget);
-		MyUnitAreaWidget->AddToViewport();
-	}
+	MyUnitAreaWidget = JeninUIManager->MyMainGameUIWidget->BP_SelectedUnitsArea;
+	
+/*
+//	if (UnitAreaWidget)
+// 	if (UnitAreaWidget)
+// 	{
+// //		MyUnitAreaWidget = CreateWidget<UJeninSelectedUnitArea>(GetWorld(), UnitAreaWidget);
+// 		MyUnitAreaWidget = CreateWidget<UJeninSelectedUnitArea>(GetWorld(), UnitAreaWidget);
+// 		MyUnitAreaWidget->AddToViewport();
+// 	}*/
 }
 
 void AJeninMarqueeHUD::MarqueePressed_Implementation()

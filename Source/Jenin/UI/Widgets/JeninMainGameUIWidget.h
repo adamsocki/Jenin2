@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Jenin/Core/Jenin_RTSInterface.h"
+#include "Jenin/UI/JeninSelectedUnitArea.h"
 #include "Jenin/Unit/Actions/JeninUnitAction.h"
 #include "JeninMainGameUIWidget.generated.h"
 
@@ -34,7 +35,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	class UTileView* ActionTiles001;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	class UScaleBox* ActionTilesScaleBox;
 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UJeninSelectedUnitArea* BP_SelectedUnitsArea;
+
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	// UScaleBox* BP_SelectedUnitsAreaScaleBox;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<TSubclassOf<UJeninUnitAction>> UnitActions;
 

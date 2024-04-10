@@ -117,15 +117,10 @@ void AJeninBuilding::BeginPlay()
 				//UE_LOG(LogTemp, Warning, TEXT("The integer count is: %d"), i);
 			}
 			//MyUnitWidget->BuildingReference = this;
-			
-			
-
 			//ActionBoxButtonWidgets.AddUnique(MyUnitWidget);
 		//	UE_LOG(LogTemp, Warning, TEXT("UnitAdd"));
-	
 		}
 	}
-
 	// HANDLE UNIT PRODUCTION QUEUE
 	if (HasAuthority())
 	{

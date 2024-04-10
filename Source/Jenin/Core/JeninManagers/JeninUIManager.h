@@ -36,4 +36,11 @@ public:
 
 	UPROPERTY()
 	UJeninMainGameUIWidget* MyMainGameUIWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UJeninSelectedUnitArea> UnitAreaWidget;
+	
+	
+	//UPROPERTY()
+	
 };
