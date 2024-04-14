@@ -354,16 +354,19 @@ void AJeninUnit::BeginPlay()
 					if (UJeninUnitActionWidget* NewUnitActionWidgetInstance = CreateWidget<UJeninUnitActionWidget>(GameWorld, NewJeninUnitActionInstance->UnitActionWidget))
 					{
 						MyUnitActionWidgets.Add(NewUnitActionWidgetInstance);
-						UE_LOG(LogTemp, Warning, TEXT("NewUnitActionWidgetInstancd"));
+						NewUnitActionWidgetInstance->ParentUnitAction = NewJeninUnitActionInstance;
+						NewJeninUnitActionInstance->InitUnitAction();
+						// UE_LOG(LogTemp, Warning, TEXT("NewUnitActionWidgetInstancd"));
+						
 
 					}
 				}
 				
-			
-				// Optionally, call any initialization or setup functions on your new object
-				//NewObjInstance->DoSomething();
 			}
 		}
+
+				// Optionally, call any initialization or setup functions on your new object
+				//NewObjInstance->DoSomething();
 		//UJeninUnitAction* JeninUnitAction = NewObject<UJeninUnitAction>(this,)
 		// UObject* ArrayElement = UnitActions[i];
 		// UClass* ElementClass = ArrayElement->GetClass();

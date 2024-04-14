@@ -46,14 +46,14 @@ public:
 	// UScaleBox* BP_SelectedUnitsAreaScaleBox;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<TSubclassOf<UJeninUnitAction>> UnitActions;
+	TArray<TSubclassOf<UJeninUnitAction>> UnitActionSlots;
 
 	UPROPERTY()
 	TArray<UJeninUnitAction*> MyUnitActions_Test;
 	
 	
 	UPROPERTY()
-	TArray<UJeninUnitActionWidget*> MyUnitActionWidgets;
+	TArray<UJeninUnitActionWidget*> MyUnitActionSlotWidgets;
 
 	UFUNCTION()
 	void UpdateActionTiles();

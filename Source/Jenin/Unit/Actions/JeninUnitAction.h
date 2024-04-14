@@ -20,4 +20,11 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UJeninUnitActionWidget> UnitActionWidget;
+	
+	// UFUNCTION()
+	virtual void UnitActionExecution();
+
+	virtual void UnitActionMouseOver();
+
+	virtual void InitUnitAction();
 };

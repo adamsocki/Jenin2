@@ -33,6 +33,8 @@ public:
 	
 	UPROPERTY()
 	UMaterialInterface* SelectionDecalMaterial;
+
+	
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void SelectThis(); virtual void SelectThis_Implementation() override;
@@ -81,8 +83,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	FText BuildingName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Building", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UJeninUnitActionWidget> Building_UnitActionWidget;
 	
-
+	UPROPERTY()
+	UJeninUnitActionWidget* MyBuilding_UnitActionWidget;
+	
 	bool IsProducingUnit;
 	
 	UFUNCTION()
@@ -94,6 +100,7 @@ public:
 	float ProductionTimeNeeded;
 	
 	float ProductionTimeSpent;
+	
 	UPROPERTY(Replicated)
 	float ProductionProgress;
 

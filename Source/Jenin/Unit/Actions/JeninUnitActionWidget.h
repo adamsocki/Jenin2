@@ -7,6 +7,8 @@
 #include "Components/Image.h"
 #include "JeninUnitActionWidget.generated.h"
 
+
+class UJeninUnitAction;
 /**
  * 
  */
@@ -26,4 +28,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ActionID;
+
+	UPROPERTY()
+	UJeninUnitAction *ParentUnitAction;
+
+	
 };

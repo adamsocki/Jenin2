@@ -2,3 +2,19 @@
 
 
 #include "JeninUnitAction.h"
+
+void UJeninUnitAction::UnitActionExecution()
+{
+
+	
+}
+
+void UJeninUnitAction::UnitActionMouseOver()
+{
+	UnitActionExecution();
+}
+
+void UJeninUnitAction::InitUnitAction()
+{
+}
+

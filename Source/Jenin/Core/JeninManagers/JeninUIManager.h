@@ -9,7 +9,7 @@
 #include "JeninUIManager.generated.h"
 
 UCLASS()
-class JENIN_API AJeninUIManager : public AActor
+class JENIN_API AJeninUIManager : public AActor, public IJeninResourceInterface
 {
 	GENERATED_BODY()
 
@@ -39,8 +39,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UJeninSelectedUnitArea> UnitAreaWidget;
-	
-	
-	//UPROPERTY()
 	
 };

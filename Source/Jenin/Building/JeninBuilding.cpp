@@ -80,6 +80,17 @@ void AJeninBuilding::BeginPlay()
 
 	MyBuildingSelectedWidget = CreateWidget<UJeninBuildingSelectedWidget>(GetWorld(), BuildingWidget);
 
+	MyBuilding_UnitActionWidget = CreateWidget<UJeninUnitActionWidget>(GetWorld(), Building_UnitActionWidget);
+
+	if (MyBuilding_UnitActionWidget)
+	{
+		if (BuildingImage)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BuildingImage"));
+
+			MyBuilding_UnitActionWidget->UnitActionImage->SetBrushFromTexture(BuildingImage);
+		}
+	}
 	
 	//for (Act)
 	

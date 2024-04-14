@@ -76,6 +76,7 @@ void AJeninMarqueeHUD::AddUnitToSelectedUnitsArea_Implementation(UJenin_Selected
 
 	if (MyUnitAreaWidget)
 	{
+		// JeninUIManager->UnitAreaWidget-
 		MyUnitAreaWidget->UnitsBox->AddChildToWrapBox(SelectedUnitWidget);
 	}
 }
@@ -107,7 +108,6 @@ void AJeninMarqueeHUD::AddUnitActionsToSelectedUnitActionsArea_Implementation(
 		{
 			MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
 			UE_LOG(LogTemp, Warning, TEXT("if (MyUnitAreaWidget)"));
-
 		}
 	}
 	UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[ActionID] is: %d"), JeninActionWidgetCounts[ActionID]);

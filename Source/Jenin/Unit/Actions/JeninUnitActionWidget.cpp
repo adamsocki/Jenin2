@@ -2,6 +2,7 @@
 
 
 #include "JeninUnitActionWidget.h"
+#include "JeninUnitAction.h"
 
 FReply UJeninUnitActionWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
@@ -28,7 +29,17 @@ FReply UJeninUnitActionWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 void UJeninUnitActionWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+
+	
 	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseEnter"));
+
+	if (ParentUnitAction)
+	{
+		ParentUnitAction->UnitActionExecution();
+		UE_LOG(LogTemp, Warning, TEXT("ParentUnitAction"));
+
+	}
+	
 	
 	
 }
