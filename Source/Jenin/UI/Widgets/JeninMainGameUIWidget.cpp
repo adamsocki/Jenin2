@@ -44,39 +44,39 @@ void UJeninMainGameUIWidget::InitMainGameUIWidget()
 	
 //	UE_LOG(LogTemp, Warning, TEXT("this init"));
 	
-	for (int i = 0; i < UnitActionSlots.Num(); i++)
-	{
-		// UE_LOG(LogTemp, Warning, TEXT("this init Cnt: %d"), i);
-		if (UJeninUnitAction* MyUnitActionSlot = NewObject<UJeninUnitAction>(this, UnitActionSlots[i]))
-		{
-			if (MyUnitActionSlot != nullptr)
-			{
-				//UE_LOG(LogTemp, Warning, TEXT("this MyUnitAction"));
-				//MyUnitActions_Test.Add(MyUnitAction);
-				if (UWorld* GameWorld = GetWorld())
-				{
-					UE_LOG(LogTemp, Warning, TEXT("this GameWorld"));
-					if (UJeninUnitActionWidget* JeninUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(this, MyUnitActionSlot->UnitActionWidget))
-					{
-						// UE_LOG(LogTemp, Warning, TEXT("This UJeninUnitActionWidget* JeninUnitActionWidget"));
-						MyUnitActionSlotWidgets.Add(JeninUnitActionWidget);
-					}
-				}
-			}
-		}
-	}
+	// for (int i = 0; i < UnitActionSlots.Num(); i++)
+	// {
+	// 	// UE_LOG(LogTemp, Warning, TEXT("this init Cnt: %d"), i);
+	// 	if (UJeninUnitAction* MyUnitActionSlot = NewObject<UJeninUnitAction>(this, UnitActionSlots[i]))
+	// 	{
+	// 		if (MyUnitActionSlot != nullptr)
+	// 		{
+	// 			//UE_LOG(LogTemp, Warning, TEXT("this MyUnitAction"));
+	// 			//MyUnitActions_Test.Add(MyUnitAction);
+	// 			if (UWorld* GameWorld = GetWorld())
+	// 			{
+	// 				UE_LOG(LogTemp, Warning, TEXT("this GameWorld"));
+	// 				if (UJeninUnitActionWidget* JeninUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(this, MyUnitActionSlot->UnitActionWidget))
+	// 				{
+	// 					// UE_LOG(LogTemp, Warning, TEXT("This UJeninUnitActionWidget* JeninUnitActionWidget"));
+	// 					MyUnitActionSlotWidgets.Add(JeninUnitActionWidget);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+	//
+	// for (int i = 0; i < MyUnitActionSlotWidgets.Num(); i++)
+	// {
+	// 	// UE_LOG(LogTemp, Warning, TEXT("This Actioncnt %d"), i);
+	//
+	// 	if (UJeninUnitActionWidget* MyUnitActionWidget = Cast<UJeninUnitActionWidget>(MyUnitActionSlotWidgets[i]))
+	// 	{
+	// 		//ActionTiles001->AddItem(MyUnitActionWidget);
+	// 	}
+	// }
 
-	for (int i = 0; i < MyUnitActionSlotWidgets.Num(); i++)
-	{
-		// UE_LOG(LogTemp, Warning, TEXT("This Actioncnt %d"), i);
-
-		if (UJeninUnitActionWidget* MyUnitActionWidget = Cast<UJeninUnitActionWidget>(MyUnitActionSlotWidgets[i]))
-		{
-			ActionTiles001->AddItem(MyUnitActionWidget);
-		}
-	}
-
-	ActionTiles001->SetVisibility(ESlateVisibility::Hidden);
+	//ActionTiles001->SetVisibility(ESlateVisibility::Hidden);
 }
 
 FText UJeninMainGameUIWidget::SetResourceCountField()
@@ -99,6 +99,12 @@ FText UJeninMainGameUIWidget::SetResourceCountField()
 
 void UJeninMainGameUIWidget::UpdateActionTiles()
 {
+
+
+
+
+	
+}
 	// UE_LOG(LogTemp, Warning, TEXT("this UpdateAction"));
 	// for (int i = 0; i < MyUnitActionSlotWidgets.Num(); i++)
 	// {
@@ -128,4 +134,4 @@ void UJeninMainGameUIWidget::UpdateActionTiles()
 	// 		// UE_LOG(LogTemp, Warning, TEXT("This Action fail	"));
 	// 	}
 	// }
-}
+

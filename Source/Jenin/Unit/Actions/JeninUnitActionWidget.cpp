@@ -37,11 +37,7 @@ void UJeninUnitActionWidget::NativeOnMouseEnter(const FGeometry& InGeometry, con
 	{
 		ParentUnitAction->UnitActionExecution();
 		UE_LOG(LogTemp, Warning, TEXT("ParentUnitAction"));
-
 	}
-	
-	
-	
 }
 
 void UJeninUnitActionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
@@ -49,5 +45,12 @@ void UJeninUnitActionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEven
 	Super::NativeOnMouseLeave(InMouseEvent);
 	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseLeave"));
 
+}
+
+void UJeninUnitActionWidget::InitActions()
+{
+
+
+	
 }
 

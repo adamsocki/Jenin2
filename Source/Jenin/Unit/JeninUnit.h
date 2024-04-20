@@ -71,6 +71,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyCategory")
 	TArray<TSubclassOf<UJeninUnitAction>> UnitActions;
 	
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyCategory")
+	// TArray<TSoftClassPtr<UJeninUnitAction>> UnitActionsObjects;
+
 	UPROPERTY()
 	TArray<UJeninUnitAction*> MyUnitActions;
 	UPROPERTY()

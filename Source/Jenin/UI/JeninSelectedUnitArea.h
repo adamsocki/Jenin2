@@ -22,4 +22,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	class UWrapBox* UnitActionsBox;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	class UWrapBox* ActionsBox;
+
 };

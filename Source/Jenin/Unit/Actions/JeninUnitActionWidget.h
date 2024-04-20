@@ -32,5 +32,6 @@ public:
 	UPROPERTY()
 	UJeninUnitAction *ParentUnitAction;
 
-	
+	UFUNCTION()
+	void InitActions();
 };

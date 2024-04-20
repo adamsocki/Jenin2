@@ -319,25 +319,16 @@ void AJeninUnit::BeginPlay()
 		}
 	}
 
-	 MyUnitWidget = CreateWidget<UJenin_SelectedUnitWidget>(GetWorld(), UnitWidget);
+	MyUnitWidget = CreateWidget<UJenin_SelectedUnitWidget>(GetWorld(), UnitWidget);
 
-	 if (MyUnitWidget)
-	 {
-		 MyUnitWidget->ActorReference = this;
-	 	if (UnitImage)
-	 	{
-	 		MyUnitWidget->UnitImage->SetBrushFromTexture(UnitImage);
-	 	}
-	 }
-	
-	// for (int i = 0; i < UnitActions.Num(); i++)
-	// {
-	// 	UJeninUnitActionWidget* MyUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(GetWorld(), UnitActions[i]);
-	// 	if (MyUnitActionWidget)
-	// 	{
-	// 		MyUnitActionWidgets.Add(MyUnitActionWidget);
-	// 	}
-	// }
+	if (MyUnitWidget)
+	{
+		MyUnitWidget->ActorReference = this;
+		if (UnitImage)
+		{
+			MyUnitWidget->UnitImage->SetBrushFromTexture(UnitImage);
+		}
+	}
 
 	for (int i = 0; i < UnitActions.Num(); i++)
 	{
@@ -351,21 +342,71 @@ void AJeninUnit::BeginPlay()
 				MyUnitActions.Add(NewJeninUnitActionInstance);
 				if (UWorld* GameWorld = GetWorld())
 				{
-					if (UJeninUnitActionWidget* NewUnitActionWidgetInstance = CreateWidget<UJeninUnitActionWidget>(GameWorld, NewJeninUnitActionInstance->UnitActionWidget))
+					if (UJeninUnitActionWidget* NewJeninUnitActionWidgetInstance = CreateWidget<UJeninUnitActionWidget>(GameWorld, NewJeninUnitActionInstance->UnitActionWidget))
 					{
-						MyUnitActionWidgets.Add(NewUnitActionWidgetInstance);
-						NewUnitActionWidgetInstance->ParentUnitAction = NewJeninUnitActionInstance;
+						MyUnitActionWidgets.Add(NewJeninUnitActionWidgetInstance);
+						NewJeninUnitActionWidgetInstance->ParentUnitAction = NewJeninUnitActionInstance;
 						NewJeninUnitActionInstance->InitUnitAction();
 						// UE_LOG(LogTemp, Warning, TEXT("NewUnitActionWidgetInstancd"));
-						
-
 					}
 				}
 				
 			}
 		}
+	}
+	
+	// for (int i = 0; i < UnitActions.Num(); i++)
+	// {
+	// 	UJeninUnitActionWidget* MyUnitActionWidget = CreateWidget<UJeninUnitActionWidget>(GetWorld(), UnitActions[i]);
+	// 	if (MyUnitActionWidget)
+	// 	{
+	// 		MyUnitActionWidgets.Add(MyUnitActionWidget);
+	// 	}
+	// }
 
-				// Optionally, call any initialization or setup functions on your new object
+	// for (int i = 0; i < UnitActionsObjects.Num(); i++)
+	// {
+	// 	if (UJeninUnitAction* UnitAction = UnitActionsObjects[i].Get())
+	// 	{
+	// 		if (UWorld* GameWorld = GetWorld())
+	// 		{
+	// 			if (UJeninUnitActionWidget* NewUnitActionWidgetInstance = CreateWidget<UJeninUnitActionWidget>(GameWorld, UnitAction->UnitActionWidget))
+	// 			{
+	// 				MyUnitActionWidgets.Add(NewUnitActionWidgetInstance);
+	// 				NewUnitActionWidgetInstance->ParentUnitAction = UnitAction;
+	// 				UnitAction->InitUnitAction();
+	// 			}
+	// 		}
+	// 	}
+	// }
+}
+			
+			// Instantiate the object using the class from the array
+			//''UJeninUnitAction* NewJeninUnitActionInstance = NewObject<UJeninUnitAction>(this, UnitActionsObjects[i]);
+		// 	if (NewJeninUnitActionInstance != nullptr)
+		// 	{
+		// 		// Add the new instance to the InstantiatedObjects array
+		// 		//MyUnitActions.Add(NewJeninUnitActionInstance);
+		// 		if (UWorld* GameWorld = GetWorld())
+		// 		{
+		// 			if (UJeninUnitActionWidget* NewUnitActionWidgetInstance = CreateWidget<UJeninUnitActionWidget>(GameWorld, NewJeninUnitActionInstance->UnitActionWidget))
+		// 			{
+		// 				MyUnitActionWidgets.Add(NewUnitActionWidgetInstance);
+		// 				NewUnitActionWidgetInstance->ParentUnitAction = NewJeninUnitActionInstance;
+		// 				NewJeninUnitActionInstance->InitUnitAction();
+		// 				// UE_LOG(LogTemp, Warning, TEXT("NewUnitActionWidgetInstancd"));
+		// 				
+		//
+		// 			}
+		// 		}
+		// 		
+		// 	}
+		// }
+
+	
+
+
+// Optionally, call any initialization or setup functions on your new object
 				//NewObjInstance->DoSomething();
 		//UJeninUnitAction* JeninUnitAction = NewObject<UJeninUnitAction>(this,)
 		// UObject* ArrayElement = UnitActions[i];
@@ -392,7 +433,7 @@ void AJeninUnit::BeginPlay()
 		// 		MyUnitActionWidgets.Add(MyUnitActionWidget);
 		// 	}
 		// }
-	}
+	
 
 	
 	// for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
@@ -411,7 +452,7 @@ void AJeninUnit::BeginPlay()
 	// 		}
 	// 	}
 	// }
-}
+
 
 // Called every frame
 void AJeninUnit::Tick(float DeltaTime)

@@ -12,6 +12,8 @@ AJeninMarqueeHUD::AJeninMarqueeHUD()
 {
 	IsDrawing = false;
 	StartingMousePosition = {};
+	
+	
 	CurrentMousePosition = {};
 	MarqueeColor = FLinearColor(0.2f, 0.2f, 0.5f, 0.4f);
 }
@@ -20,7 +22,7 @@ void AJeninMarqueeHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MyUnitAreaWidget = JeninUIManager->MyMainGameUIWidget->BP_SelectedUnitsArea;
+	MySelectedUnitArea = JeninUIManager->MyMainGameUIWidget->BP_SelectedUnitsArea;
 	
 /*
 //	if (UnitAreaWidget)
@@ -74,10 +76,10 @@ void AJeninMarqueeHUD::AddUnitToSelectedUnitsArea_Implementation(UJenin_Selected
 {
 	IJenin_RTSInterface::AddUnitToSelectedUnitsArea_Implementation(SelectedUnitWidget);
 
-	if (MyUnitAreaWidget)
+	if (MySelectedUnitArea)
 	{
 		// JeninUIManager->UnitAreaWidget-
-		MyUnitAreaWidget->UnitsBox->AddChildToWrapBox(SelectedUnitWidget);
+		MySelectedUnitArea->UnitsBox->AddChildToWrapBox(SelectedUnitWidget);
 	}
 }
 
@@ -104,9 +106,11 @@ void AJeninMarqueeHUD::AddUnitActionsToSelectedUnitActionsArea_Implementation(
 	{
 		JeninActionWidgetCounts.Add(ActionID, 1);
 		JeninUnitActionWidgets.Add(SelectedUnitActionWidget);
-		if (MyUnitAreaWidget)
+		
+		if (MySelectedUnitArea)
 		{
-			MyUnitAreaWidget->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
+			MySelectedUnitArea->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
+			// SelectedUnitActionWidget->InitActions();
 			UE_LOG(LogTemp, Warning, TEXT("if (MyUnitAreaWidget)"));
 		}
 	}

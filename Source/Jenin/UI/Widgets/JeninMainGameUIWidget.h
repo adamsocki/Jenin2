@@ -22,7 +22,6 @@ class JENIN_API UJeninMainGameUIWidget : public UUserWidget, public IJenin_RTSIn
 
 public:
 
-
 	UFUNCTION()
 	void InitMainGameUIWidget();
 	
@@ -31,33 +30,35 @@ public:
 
 	UFUNCTION()
 	FText SetResourceCountField();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-	class UTileView* ActionTiles001;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-	class UScaleBox* ActionTilesScaleBox;
-
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	UJeninSelectedUnitArea* BP_SelectedUnitsArea;
+	
+	UFUNCTION()
+	void UpdateActionTiles();
+
 
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	// UScaleBox* BP_SelectedUnitsAreaScaleBox;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<TSubclassOf<UJeninUnitAction>> UnitActionSlots;
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	// TArray<TSubclassOf<UJeninUnitAction>> UnitActionSlots;
 
-	UPROPERTY()
-	TArray<UJeninUnitAction*> MyUnitActions_Test;
+	// UPROPERTY()
+	// TArray<UJeninUnitAction*> MyUnitActions_Test;
 	
-	
-	UPROPERTY()
-	TArray<UJeninUnitActionWidget*> MyUnitActionSlotWidgets;
+	//
+	// UPROPERTY()
+	// TArray<UJeninUnitActionWidget*> MyUnitActionSlotWidgets;
 
-	UFUNCTION()
-	void UpdateActionTiles();
+	//UPROPERTY()
+	// TArray<UJeninUnitActionWidget*> My
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	//class UTileView* ActionTiles001;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	//class UScaleBox* ActionTilesScaleBox;
 	
 	
 };

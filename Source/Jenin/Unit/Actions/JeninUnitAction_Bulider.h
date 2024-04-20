@@ -22,9 +22,7 @@ public:
 	UFUNCTION()
 	void InitUnitAction_Builder(AJeninUIManager* UIManager);
 
-	UPROPERTY()
-	AJeninUIManager* JeninUIManager;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSoftObjectPtr<AJeninBuilding>> JeninBuildings;
 
@@ -32,7 +30,10 @@ public:
 	TArray<AJeninBuilding*> JeninGhostBuildings;
 	
 	UPROPERTY()
-	TArray<UJeninUnitActionWidget*> JeninGhostBuildingWidgets;
+	TArray<UJeninUnitActionWidget*> MyJeninGhostBuildingWidgets;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UJeninUnitActionWidget> JeninUnitActionWidget;
 
 	virtual void UnitActionExecution() override;
 
