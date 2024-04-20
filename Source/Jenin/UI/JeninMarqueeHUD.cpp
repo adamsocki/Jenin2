@@ -111,6 +111,7 @@ void AJeninMarqueeHUD::AddUnitActionsToSelectedUnitActionsArea_Implementation(
 		{
 			MySelectedUnitArea->UnitActionsBox->AddChildToWrapBox(SelectedUnitActionWidget);
 			// SelectedUnitActionWidget->InitActions();
+			
 			UE_LOG(LogTemp, Warning, TEXT("if (MyUnitAreaWidget)"));
 		}
 	}
@@ -140,7 +141,11 @@ void AJeninMarqueeHUD::ClearSelectedUnits_Implementation()
 	IJenin_RTSInterface::ClearSelectedUnits_Implementation();
 	for (int i = 0; i < UnitsSelected.Num(); i++)
 	{
-		UnitsSelected[i]->DeselectThis_Implementation();
+		if (Cast<IJenin_RTSInterface>(UnitsSelected[i]))
+		{
+			Execute_DeselectThis(UnitsSelected[i]);
+		}
+		//UnitsSelected[i]->DeselectThis_Implementation();
 		// @TODO NEED TO RERUN UNIT ACTION CHECK?
 	}
 	UnitsSelected.Empty();
@@ -167,40 +172,15 @@ void AJeninMarqueeHUD::RemoveUnitActionWidget_Implementation(UJeninUnitActionWid
 			JeninActionWidgetCounts.Remove(ActionID);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("RemoveUnitActionWidget_Implementation"));
-		// UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[UnitActionWidget->ActionID] -= is: %d"), JeninActionWidgetCounts[UnitActionWidget->ActionID]);
-		// if (JeninActionWidgetCounts[ActionID] >= 1)
-		// {
-		// 	// JeninActionWidgetCounts
-		// //	JeninActionWidgetCounts.Remove(ActionID);
-		// 	// DeselectedUnitActionWidget->RemoveFromParent();
-		// 	//JeninUnitActionWidgets.Remove(DeselectedUnitActionWidget);
-		// }
-		// if (JeninActionWidgetCounts[ActionID] > 1)
-		// {
-		// 	JeninActionWidgetCounts[ActionID] -= 1;
-		// }
-
-		//JeninUnitActionWidgets.Remove(DeselectedUnitActionWidget);
 	}
-	
-	
+}
 
-	
-	// Check if the action ID exists in the count map
-	// if (JeninActionWidgetCounts.Contains(UnitActionWidget->ActionID))
+void AJeninMarqueeHUD::RemoveActionWidget_Implementation(UJeninUnitActionWidget* DeselectedActionWidget)
+{
+	IJenin_RTSInterface::RemoveActionWidget_Implementation(DeselectedActionWidget);
+	// if (DeselectedActionWidget)
 	// {
-	// 	// Decrement the count for this action ID
-	// 	JeninActionWidgetCounts[UnitActionWidget->ActionID] -= 1;
-	// 	UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[UnitActionWidget->ActionID] -= is: %d"), JeninActionWidgetCounts[UnitActionWidget->ActionID]);
-	//
-	//
-	// 	if (JeninActionWidgetCounts[UnitActionWidget->ActionID] == 0)
-	// 	{
-	// 		UE_LOG(LogTemp, Warning, TEXT("JeninActionWidgetCounts[UnitActionWidget->ActionID] == 0"));
-	//
-	// 		JeninActionWidgetCounts.Remove(UnitActionWidget->ActionID);
-	// 		UnitActionWidget->RemoveFromParent();
-	// 	}
+	// 	//Jen
 	// }
 }
 

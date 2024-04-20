@@ -36,9 +36,10 @@ public:
 	TSubclassOf<UJeninUnitActionWidget> JeninUnitActionWidget;
 
 	virtual void UnitActionExecution() override;
+	virtual void UnitActionDeExecution() override;
 
 	virtual void UnitActionMouseOver() override;
 	
 	virtual void InitUnitAction() override;
-	
+
 };

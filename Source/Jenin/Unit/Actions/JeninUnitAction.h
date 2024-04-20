@@ -32,8 +32,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UJeninUnitActionWidget> UnitActionWidget;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UJeninActionListEntry> JeninActionListEntry;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<UJeninActionListEntry> JeninActionListEntry;
 
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<AJeninUIManager> JeninUIManager;
@@ -47,4 +47,6 @@ public:
 	virtual void UnitActionMouseOver();
 
 	virtual void InitUnitAction();
+	
+	virtual void UnitActionDeExecution();
 };

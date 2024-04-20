@@ -79,5 +79,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
 	void RemoveUnitActionWidget(UJeninUnitActionWidget* DeselectedUnitActionWidget);
-	
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category= "Marquee")
+	void RemoveActionWidget(UJeninUnitActionWidget* DeselectedActionWidget);
 };

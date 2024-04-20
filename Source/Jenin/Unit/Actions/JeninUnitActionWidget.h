@@ -9,9 +9,13 @@
 
 
 class UJeninUnitAction;
+
 /**
+ *
+ *
  * 
  */
+
 UCLASS()
 class JENIN_API UJeninUnitActionWidget : public UUserWidget
 {
@@ -32,6 +36,10 @@ public:
 	UPROPERTY()
 	UJeninUnitAction *ParentUnitAction;
 
+	
+	bool MouseIsOver = false;
+
 	UFUNCTION()
 	void InitActions();
+
 };

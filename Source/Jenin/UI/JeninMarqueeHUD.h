@@ -49,9 +49,9 @@ public:
 	void SelectSingleUnit(AActor* Unit); virtual void SelectSingleUnit_Implementation(AActor* Unit) override;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void RemoveUnitActionWidget(UJeninUnitActionWidget* DeselectedUnitActionWidget); virtual void RemoveUnitActionWidget_Implementation(UJeninUnitActionWidget* DeselectedUnitActionWidget) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void RemoveActionWidget(UJeninUnitActionWidget* DeselectedActionWidget); virtual void RemoveActionWidget_Implementation(UJeninUnitActionWidget* DeselectedActionWidget) override;
 
-
-	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UJeninSelectedUnitArea> UnitAreaWidget;
@@ -61,8 +61,6 @@ public:
 	TSubclassOf<UJeninMainGameUIWidget> JeninMainGameUIWidget;
 	UPROPERTY()
 	UJeninMainGameUIWidget* MyJeninMainGameUIWidget;
-
-
 	
 	// UPROPERTY()
 	// UJeninSelectedUnitArea* MyUnitAreaWidget;
@@ -72,7 +70,6 @@ public:
 
 	UPROPERTY()
 	TArray<UJeninUnitActionWidget*> JeninUnitActionWidgets;
-
 	
 	virtual void DrawHUD() override;
 	

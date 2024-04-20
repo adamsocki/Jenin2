@@ -60,18 +60,27 @@ void UJeninUnitAction_Bulider::UnitActionExecution()
 				for (int i = 0; i < MyJeninGhostBuildingWidgets.Num(); i++)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("MyJeninGhostBuildingWidgets TTTTTTTT %d"), i);
-					//// 					UE_LOG(LogTemp, Warning, TEXT("UnitActionExecution JeninGhostBuildingWidgets"));
-					// 					
+					
 					JeninUIManager->MyMainGameUIWidget->BP_SelectedUnitsArea->ActionsBox->AddChildToWrapBox(MyJeninGhostBuildingWidgets[i]);
 				}
 			}
 		}
 	}
-}	
+}
 
+void UJeninUnitAction_Bulider::UnitActionDeExecution()
+{
+	Super::UnitActionDeExecution();
+	for (int i = 0; i < MyJeninGhostBuildingWidgets.Num(); i++)
+	{
+		MyJeninGhostBuildingWidgets[i]->RemoveFromParent();
+	}
 
 	
-	// if (JeninUIManager)
+}
+
+
+// if (JeninUIManager)
 	// {
 	// 	UE_LOG(LogTemp, Warning, TEXT("UnitActionExecution JeninUIManager"));
 	// 	if (JeninUIManager->MyMainGameUIWidget)

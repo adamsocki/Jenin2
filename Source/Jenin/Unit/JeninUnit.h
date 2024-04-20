@@ -32,7 +32,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void SelectThis(); virtual void SelectThis_Implementation() override;
-	virtual void DeselectThis_Implementation() override;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
+	void DeselectThis(); virtual void DeselectThis_Implementation() override;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MyCategory")
 	void UnitMoveCommand(FVector Location);virtual void UnitMoveCommand_Implementation(FVector Location) override;
 	virtual void HighlightUnit_Implementation() override;

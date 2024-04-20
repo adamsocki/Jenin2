@@ -8,16 +8,11 @@ FReply UJeninUnitActionWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 {
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-
-		
-		// if (ProductionButton)
-		// {
-		// 	//ProductionButton->OnClicked.AddDynamic(this, &UJeninProduceUnitWidget::OnProductionButtonClicked);
-		// 	//ProductionButton->OnClicked
-		// 	ProductionButton->OnClicked.AddUniqueDynamic(this, &UJeninProduceUnitWidget::OnProductionButtonClicked);
-		//
-		// }
-		
+		if (ParentUnitAction && MouseIsOver)
+		{
+			ParentUnitAction->UnitActionExecution();
+			// ParentUnitAction->UnitActionDeExecution();
+		}
 		return FReply::Handled();
 	}
 	else
@@ -29,28 +24,17 @@ FReply UJeninUnitActionWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 void UJeninUnitActionWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
-
-	
-	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseEnter"));
-
-	if (ParentUnitAction)
-	{
-		ParentUnitAction->UnitActionExecution();
-		UE_LOG(LogTemp, Warning, TEXT("ParentUnitAction"));
-	}
+	MouseIsOver = true;
 }
 
 void UJeninUnitActionWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
-	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseLeave"));
-
+	MouseIsOver = false;
 }
 
 void UJeninUnitActionWidget::InitActions()
 {
-
-
 	
 }
 

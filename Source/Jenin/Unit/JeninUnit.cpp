@@ -105,10 +105,11 @@ void AJeninUnit::DeselectThis_Implementation()
 				if (Cast<IJenin_RTSInterface>(MarqueeHUD))
 				{
 					Execute_RemoveUnitActionWidget(MarqueeHUD, MyUnitActionWidgets[i]);
+					//Execute_RemoveActionWidget(MarqueeHUD, MyUnitActionWidgets[i]->ParentUnitAction->UnitActionDeExecution());
+					MyUnitActionWidgets[i]->ParentUnitAction->UnitActionDeExecution();
 				}
 			}
 		}
-		
 		MyUnitActionWidgets[i]->RemoveFromParent();
 	}
 }
@@ -122,7 +123,7 @@ void AJeninUnit::UnitMoveCommand_Implementation(FVector Location)
 		//UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand_Implementation called. Location: %s"), *Location.ToString());
 		if (HasAuthority()) // or Role == ROLE_Authority
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on SERVER for %s"), *GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("UnitMoveCommand executing on SERVER for %s"), *GetName());
 		}
 		else 
 		{

@@ -30,3 +30,10 @@ void UJeninUnitAction::InitUnitAction()
 	
 }
 
+void UJeninUnitAction::UnitActionDeExecution()
+{
+
+
+	
+}
+
