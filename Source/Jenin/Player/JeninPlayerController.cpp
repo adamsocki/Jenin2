@@ -63,8 +63,8 @@ void AJeninPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LeftShiftAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnLeftShiftPressed);
 		EnhancedInputComponent->BindAction(LeftShiftAction, ETriggerEvent::Completed, this, &AJeninPlayerController::OnLeftShiftReleased);
 
-		EnhancedInputComponent->BindAction(KeyboardMover, ETriggerEvent::Started, this, &AJeninPlayerController::OnKeyboardCameraPawnMover);
-		//EnhancedInputComponent->BindAction(MouseAxisAction, ETriggerEvent::Triggered, this, &AJeninPlayerController::MouseAxisModify);
+		EnhancedInputComponent->BindAction(KeyboardMover, ETriggerEvent::Triggered, this, &AJeninPlayerController::OnKeyboardCameraPawnMover);
+		// EnhancedInputComponent->BindAction(MouseAxisAction, ETriggerEvent::Re, this, &AJeninPlayerController::MouseAxisModify);
 
 	}
 }
@@ -400,8 +400,10 @@ void AJeninPlayerController::OnLeftShiftReleased(const FInputActionValue& Value)
 
 void AJeninPlayerController::OnKeyboardCameraPawnMover(const FInputActionValue& Value)
 {
-	FVector MovementVector = Value.Get<FVector>();
-
+	FVector3d MovementVector = Value.Get<FVector3d>();
+	UE_LOG(LogTemp, Log, TEXT("Movement Vector: X = %f, Y = %f, Z = %f"), 
+		MovementVector.X, MovementVector.Y, MovementVector.Z);
+    
 	AJeninCameraPawn* JeninCameraPawn = Cast<AJeninCameraPawn>(GetPawn());
 	if (JeninCameraPawn)
 	{
@@ -413,7 +415,7 @@ void AJeninPlayerController::OnKeyboardCameraPawnMover(const FInputActionValue& 
 			ZoomSpeedApply *= 4.0f;
 		}
 
-		JeninCameraPawn->MoveCamera();
+		JeninCameraPawn->KeyboardMovementVector = MovementVector;
 	}
 }
 

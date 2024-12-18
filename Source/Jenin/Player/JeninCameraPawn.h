@@ -32,6 +32,7 @@ public:
 	ECameraMovementType CurrentMovementType = ECameraMovementType::CameraPan;
 
 	float ScrollSpeed = 700.0f;
+	FVector3d KeyboardMovementVector; 
 	bool MoveW;
 	bool MoveA;
 	bool MoveS;
@@ -60,5 +61,5 @@ public:
 	float Target_TargetArmLength;
 
 	UFUNCTION()
-	void MoveCamera();
+	void MoveCamera(FVector3d MovementInput);
 };
