@@ -23,7 +23,7 @@ AJeninCameraPawn::AJeninCameraPawn()
 
 	this->Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	this->Camera->SetupAttachment(this->SpringArm);
-	
+
 	FRotator NewRotation = FRotator(70.0f, 0.0f, 0.0f); // Construct rotator with desired values
 	Camera->SetRelativeRotation(NewRotation);
 
@@ -37,128 +37,150 @@ void AJeninCameraPawn::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AJeninCameraPawn::MoveCamera()
+{
+	if (AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(Controller))
+	{
+		switch (CurrentMovementType)
+		{
+		case ECameraMovementType::CameraKeyboard:
+			{
+				
+			}
+		case ECameraMovementType::CameraPan:
+			{
+				float TraceDistance = 8000.0f;
+
+				FHitResult HitResult;
+				FVector StartLocation = CameraBoxComponent->GetComponentLocation();
+				FVector EndLocation = StartLocation + FVector::DownVector * TraceDistance;
+				// TraceDistance is how far down you want to trace
+				//
+				FCollisionQueryParams CP = {};
+				TArray<AActor*> ActorsToIgnore = {};
+				//
+				bool bTraceHit = ActorLineTraceSingle(HitResult, StartLocation, EndLocation, ECC_WorldStatic, CP);
+				if (bTraceHit)
+				{
+					//			HitResult.Distance;=
+				}
+
+				// bool bTraceHit = UKismetSystemLibrary::LineTraceSingle(
+				// 	GetWorld(), 
+				// 	StartLocation, 
+				// 	EndLocation, 
+				// 	ETraceTypeQuery::TraceTypeQuery1, // Adjust the trace channel as needed
+				// 	false,  // Whether to ignore simple collisions
+				// 	ActorsToIgnore, // Array of actors to ignore in the trace
+				// 	EDrawDebugTrace::ForDuration, // Use this to visualize the trace
+				// 	HitResult, 
+				// 	true, 
+				// 	FLinearColor::Red, 
+				// 	FLinearColor::Green, 
+				// 	5.0f // Line trace thickness
+				// );
+
+				// float DesiredHeightOffset = 1000.0f;
+				// float InterpSpeed = 5.0f; // Adjust this for desired camera movement smoothness
+				//
+				// if (bTraceHit)
+				// {
+				// 	float DistanceToGround = (StartLocation - HitResult.Location).Z;
+				// 	// Use DistanceToGround to adjust the camera's Z position
+				// 	FVector TargetCameraLocation = CameraBoxComponent->GetComponentLocation();
+				// 	TargetCameraLocation.Z = StartLocation.Z - DistanceToGround + DesiredHeightOffset; // DesiredHeightOffset is a constant you'd set for your preferred camera height.
+				// 	FVector NewCameraLocation = FMath::VInterpTo(CameraBoxComponent->GetComponentLocation(), TargetCameraLocation, GetWorld()->DeltaTimeSeconds, InterpSpeed);
+				// 	CameraBoxComponent->SetWorldLocation(TargetCameraLocation);
+				// }
+
+
+				FVector MousePosition = {};
+				int32 ViewportSizeX = {};
+				int32 ViewportSizeY = {};
+				JeninPlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
+				JeninPlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+
+				// @TODO -> Get Distance to floor to scale speed 
+				// @TODO -> Get Distance to move up/down for terrain adjustment
+
+				float ScrollSpeedToApply = ScrollSpeed;
+				if (JeninPlayerController->LeftShiftButtonDown)
+				{
+					ScrollSpeedToApply *= 4;
+				}
+
+				if (IsOverTopEdge)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.X = ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
+					AddActorWorldOffset(DeltaLocation);
+				}
+				else if (IsOverBottomEdge)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.X = -ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
+					AddActorWorldOffset(DeltaLocation);
+				}
+				else if (IsOverLeftEdge)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.Y = -ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
+					AddActorWorldOffset(DeltaLocation);
+				}
+				else if (IsOverRightEdge)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.Y = ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
+					AddActorWorldOffset(DeltaLocation);
+				}
+				else if (IsOverTopLeft)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.X = (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					DeltaLocation.Y = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					AddActorWorldOffset(DeltaLocation);
+				}
+				else if (IsOverTopRight)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.X = (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					DeltaLocation.Y = (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					AddActorWorldOffset(DeltaLocation);
+				}
+				else if (IsOverBottomLeft)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.X = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					DeltaLocation.Y = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					AddActorWorldOffset(DeltaLocation);
+				}
+				else if (IsOverBottomRight)
+				{
+					FVector DeltaLocation = {};
+					DeltaLocation.X = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					DeltaLocation.Y = (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67);
+					AddActorWorldOffset(DeltaLocation);
+				}
+			}
+		default:
+			{
+			}
+		// case
+		}
+	}
+}
+
 // Called every frame
 void AJeninCameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	// CAMERA MOVEMENT AT EDGE OF VIEWPORT
-	if(AJeninPlayerController* JeninPlayerController = Cast<AJeninPlayerController>(Controller))
-	{
-		float TraceDistance = 8000.0f;
-		
-		FHitResult HitResult;
-		FVector StartLocation = CameraBoxComponent->GetComponentLocation();
-		FVector EndLocation = StartLocation + FVector::DownVector * TraceDistance; // TraceDistance is how far down you want to trace
-		//
-		FCollisionQueryParams CP = {};
-		 TArray<AActor*> ActorsToIgnore ={};
-		//
-		bool bTraceHit = ActorLineTraceSingle(HitResult, StartLocation, EndLocation, ECC_WorldStatic, CP);
-		if (bTraceHit)
-		{
-//			HitResult.Distance;=
-		}
 
-		// bool bTraceHit = UKismetSystemLibrary::LineTraceSingle(
-		// 	GetWorld(), 
-		// 	StartLocation, 
-		// 	EndLocation, 
-		// 	ETraceTypeQuery::TraceTypeQuery1, // Adjust the trace channel as needed
-		// 	false,  // Whether to ignore simple collisions
-		// 	ActorsToIgnore, // Array of actors to ignore in the trace
-		// 	EDrawDebugTrace::ForDuration, // Use this to visualize the trace
-		// 	HitResult, 
-		// 	true, 
-		// 	FLinearColor::Red, 
-		// 	FLinearColor::Green, 
-		// 	5.0f // Line trace thickness
-		// );
+	MoveCamera();
 
-		// float DesiredHeightOffset = 1000.0f;
-		// float InterpSpeed = 5.0f; // Adjust this for desired camera movement smoothness
-		//
-		// if (bTraceHit)
-		// {
-		// 	float DistanceToGround = (StartLocation - HitResult.Location).Z;
-		// 	// Use DistanceToGround to adjust the camera's Z position
-		// 	FVector TargetCameraLocation = CameraBoxComponent->GetComponentLocation();
-		// 	TargetCameraLocation.Z = StartLocation.Z - DistanceToGround + DesiredHeightOffset; // DesiredHeightOffset is a constant you'd set for your preferred camera height.
-		// 	FVector NewCameraLocation = FMath::VInterpTo(CameraBoxComponent->GetComponentLocation(), TargetCameraLocation, GetWorld()->DeltaTimeSeconds, InterpSpeed);
-		// 	CameraBoxComponent->SetWorldLocation(TargetCameraLocation);
-		// }
 
-		
-		FVector MousePosition = {};
-		int32 ViewportSizeX = {};
-		int32 ViewportSizeY = {};
-		JeninPlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
-		JeninPlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	// FloatInter
 
-		// @TODO -> Get Distance to floor to scale speed 
-		// @TODO -> Get Distance to move up/down for terrain adjustment
-
-		float ScrollSpeedToApply = ScrollSpeed;
-		if (JeninPlayerController->LeftShiftButtonDown)
-		{
-			ScrollSpeedToApply *= 4;
-		}
-		
-		if (IsOverTopEdge)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.X = ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
-			AddActorWorldOffset(DeltaLocation);
-		}
-		else if (IsOverBottomEdge)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.X = -ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
-			AddActorWorldOffset(DeltaLocation);
-		}
-		else if (IsOverLeftEdge)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.Y = -ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
-			AddActorWorldOffset(DeltaLocation);
-		}
-		else if (IsOverRightEdge)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.Y = ScrollSpeedToApply * GetWorld()->GetDeltaSeconds();
-			AddActorWorldOffset(DeltaLocation);
-		}
-		else if (IsOverTopLeft)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.X =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			AddActorWorldOffset(DeltaLocation);
-		}
-		else if (IsOverTopRight)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.X =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			AddActorWorldOffset(DeltaLocation);
-		}
-		else if (IsOverBottomLeft)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.X = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			AddActorWorldOffset(DeltaLocation);
-		}
-		else if (IsOverBottomRight)
-		{
-			FVector DeltaLocation = {};
-			DeltaLocation.X = -(ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			DeltaLocation.Y =  (ScrollSpeedToApply * GetWorld()->GetDeltaSeconds() * 0.67 );
-			AddActorWorldOffset(DeltaLocation);
-		}
-	}
-
- // FloatInter
-	
 	SpringArm->TargetArmLength = FMath::FInterpTo(SpringArm->TargetArmLength, Target_TargetArmLength, DeltaTime, 5.0f);
 }
 
@@ -166,6 +188,4 @@ void AJeninCameraPawn::Tick(float DeltaTime)
 void AJeninCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
 }
-

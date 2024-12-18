@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ECameraMovementType.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
@@ -27,6 +28,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> SpringArm = nullptr;
+
+	ECameraMovementType CurrentMovementType = ECameraMovementType::CameraPan;
 
 	float ScrollSpeed = 700.0f;
 	bool MoveW;
@@ -55,4 +58,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	float Target_TargetArmLength;
+
+	UFUNCTION()
+	void MoveCamera();
 };

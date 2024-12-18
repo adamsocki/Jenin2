@@ -16,6 +16,9 @@
 /**
  * 
  */
+
+
+
 UCLASS()
 class JENIN_API AJeninPlayerController : public APlayerController, public IJenin_RTSInterface
 {
@@ -25,6 +28,7 @@ class JENIN_API AJeninPlayerController : public APlayerController, public IJenin
 
 	//@TODO -> allow mouse pivot camera
 	//@TODO -> mouse wheel scroll camera
+	
 	
 public:
 	
@@ -46,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LeftShiftAction = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> KeyboardMover = nullptr;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AJeninGameManager> JeninGameManager;
 	
@@ -109,6 +116,9 @@ public:
 	void OnLeftShiftReleased(const FInputActionValue& Value);
 	// UFUNCTION()
 	// void MouseAxisModify(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void OnKeyboardCameraPawnMover(const FInputActionValue& Value);
 
 	bool MiddleMouseButtonDown;
 	bool LeftShiftButtonDown;

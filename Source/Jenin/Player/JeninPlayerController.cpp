@@ -63,7 +63,7 @@ void AJeninPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LeftShiftAction, ETriggerEvent::Started, this, &AJeninPlayerController::OnLeftShiftPressed);
 		EnhancedInputComponent->BindAction(LeftShiftAction, ETriggerEvent::Completed, this, &AJeninPlayerController::OnLeftShiftReleased);
 
-		
+		EnhancedInputComponent->BindAction(KeyboardMover, ETriggerEvent::Started, this, &AJeninPlayerController::OnKeyboardCameraPawnMover);
 		//EnhancedInputComponent->BindAction(MouseAxisAction, ETriggerEvent::Triggered, this, &AJeninPlayerController::MouseAxisModify);
 
 	}
@@ -107,6 +107,7 @@ void AJeninPlayerController::ServerMoveToLocationStarted_Implementation(AJeninUn
 		UE_LOG(LogTemp, Warning, TEXT("ServerUpdate for move."));
 	}
 }
+
 
 
 void AJeninPlayerController::SetupPlayerStart_Implementation(AJeninPlayerStart* PlayerStart, int32 teamNumber, FLinearColor teamColor)
@@ -395,6 +396,25 @@ void AJeninPlayerController::OnLeftShiftReleased(const FInputActionValue& Value)
 {
 	LeftShiftButtonDown = false;
 	UE_LOG(LogTemp, Warning, TEXT("OnLeftShiftReleased"));
+}
+
+void AJeninPlayerController::OnKeyboardCameraPawnMover(const FInputActionValue& Value)
+{
+	FVector MovementVector = Value.Get<FVector>();
+
+	AJeninCameraPawn* JeninCameraPawn = Cast<AJeninCameraPawn>(GetPawn());
+	if (JeninCameraPawn)
+	{
+		FVector CurrentAxis = InputComponent->GetVectorAxisValue(FName("CameraPawn"));
+
+		float ZoomSpeedApply = 500.0f;
+		if (LeftShiftButtonDown)
+		{
+			ZoomSpeedApply *= 4.0f;
+		}
+
+		JeninCameraPawn->MoveCamera();
+	}
 }
 
 // void AJeninPlayerController::MouseAxisModify(const FInputActionValue& Value)
