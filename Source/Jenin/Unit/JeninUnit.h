@@ -9,6 +9,8 @@
 #include "Jenin/Player/JeninPlayerController.h"
 #include "Jenin/Resource/JeninResourceInterface.h"
 #include "Jenin/UI/Jenin_SelectedUnitWidget.h"
+
+#include "Components/WidgetComponent.h"
 #include "JeninUnit.generated.h"
 
 
@@ -24,6 +26,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	UDecalComponent* SelectionDecal;
 
+	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jenin", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTexture2D> UnitImage;
 
@@ -58,6 +62,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
 
 	UPROPERTY()
 	AJeninPlayerController *UnitsJeninPlayerController;

@@ -37,12 +37,15 @@ AJeninUnit::AJeninUnit()
 		SelectionDecalMaterial = SelectedMaterialAsset.Object;
 	}
 
+
+	
 	static ConstructorHelpers::FObjectFinder<UMaterial> HighlightedSelectedMaterialAsset(TEXT("Material'/Game/App/Materials/MAT_JeninSelectionDecalHighlight.MAT_JeninSelectionDecalHighlight'")); 
 	if (HighlightedSelectedMaterialAsset.Succeeded())
 	{
 		HighlightedDecalMaterial = HighlightedSelectedMaterialAsset.Object;
 	}
 
+	
 	ResourceOverlapper = CreateDefaultSubobject<UBoxComponent>(TEXT("ResourceOverlapper"));
 	ResourceOverlapper->SetupAttachment(UnitCapsuleComponent);
 
@@ -162,13 +165,16 @@ void AJeninUnit::Collect_Implementation()
 			Execute_UnitMoveCommand(this, DropOffBuilding->GetActorLocation());
 		}
 		else
-		{
+		{	//  **********
+			//	IF THE UNIT IS NOT CURRENTLY WORKING, THEN IT WILL START A TIMER FOR HOW LONG TO WORK
+			//	ONCE THE TIMER IS COMPLETED, IT WILL GO TO THE LOCATION USING resourceCollected FUNCTION
+			//	TODO -> MAKE A CUSTOM FINISH TYPE WHICH CAN BE CONTAINED IN THE WORKING OBJECT THAT THE UNIT IS ENGAGED WITH
 			UE_LOG(LogTemp, Warning, TEXT("Has Resource FALSE"));
 
 			Execute_UnitMoveCommand(this, this->GetActorLocation());
 			
 			float TimerInterval = 4.0f;  
-			bool bShouldLoop = false; // Whether it should repeat
+			bool bShouldLoop = false;
 
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &AJeninUnit::ResourceCollected, TimerInterval, bShouldLoop);
 			if (!TimerHandle.IsValid())

@@ -21,6 +21,7 @@ class JENIN_API UJeninProduceUnitWidget : public UUserWidget
 
 	
 
+
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
@@ -41,4 +42,6 @@ public:
 	void OnProductionButtonClicked();
 
 	bool bIsUnitProductionInProgress;
+
+	
 };

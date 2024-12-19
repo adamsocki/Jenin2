@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "JeninUnitActionWidget.generated.h"
 
 
@@ -41,5 +42,13 @@ public:
 
 	UFUNCTION()
 	void InitActions();
+
+	UPROPERTY()
+	UUserWidget* CursorWidget;
+	UPROPERTY(EditDefaultsOnly, Category = "Jenin")
+	TSubclassOf<UUserWidget> CursorWidgetClass;
+
+	//UPROPERTY(meta = (BindWidget))
+	//UTextBlock* CursorText = nullptr;
 
 };
